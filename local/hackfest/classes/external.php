@@ -77,6 +77,7 @@ class external extends external_api {
     public static function get_site_info_returns() {
         $result = \core_webservice_external::get_site_info_returns();
         $result->keys['currenttime'] = new external_value(PARAM_RAW, 'the current time');
+        $result->keys['galgal'] = new external_value(PARAM_RAW, 'no idea what goes here');
         return $result;
     }
     
