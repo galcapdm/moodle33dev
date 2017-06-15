@@ -24,6 +24,8 @@
 
 require_once(__DIR__ . '/../../config.php');
 
+require_login();
+
 $title = get_string('pagetitle', 'local_hackfest');
 $pagetitle = get_string('pagetitle', 'local_hackfest');
 // Set up the page.
