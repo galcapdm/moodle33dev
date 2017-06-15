@@ -64,6 +64,7 @@ class external extends external_api {
      */
     public static function get_site_info($serviceshortnames = array()) {
         global $PAGE;
+        $PAGE->set_context();
         $renderer = $PAGE->get_renderer('local_hackfest');
         $page = new \local_hackfest\output\index_page();
         return $page->export_for_template($renderer);
