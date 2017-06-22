@@ -32,11 +32,19 @@ $functions = array(
         'type'        => 'read',
         'capabilities'=> '',
     ),
-    'local_hackfest_get_users_info' => array(
+    'local_hackfest_get_user_info' => array(
         'classname'   => 'local_hackfest\external',
         'methodname'  => 'get_user_info',
         'classpath'   => '',
         'description' => 'Return some user info.',
+        'type'        => 'read',
+        'capabilities'=> '',
+    ),
+    'local_hackfest_get_replies' => array(
+        'classname'   => 'local_hackfest\external',
+        'methodname'  => 'get_replies',
+        'classpath'   => '',
+        'description' => 'Return helpdesk replies.',
         'type'        => 'read',
         'capabilities'=> '',
     )

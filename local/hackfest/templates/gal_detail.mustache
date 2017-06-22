@@ -15,26 +15,20 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_hackfest/index_page
+    @template local_hackfest/gal_detail
 
-    Starting point for an awesome template.
+    This shows the user details page.
 
 }}
-<div data-region="index-page">
-    <h3>{{sitename}}</h3>
-    <h4>You are: {{fullname}}</h4>
-    <h4>Time is: {{currenttime}}</h4>
-    <input id="msgid" type="text"></input>
-    <button id="refresh">{{#str}}refresh{{/str}}</button>
+<div data-region="index-page-gal">
+    {{^user}}
+        <p>No user info to display right now</p>
+    {{/user}}
+    {{#user}}
+        <h1>User info is as follows:-</h1>
+        <h4>First name: {{firstname}}</h4>
+        <h4>Last name: {{lastname}}</h4>
+        <h4>Username: {{username}}</h4>
+        <h4>Email: {{email}}</h4>
+    {{/user}}
 </div>
-{{#replies}}
-<div data-region="message-replies-{{id}}" class="reply-holder">
-    <p>Message {{id}} will go here&hellip;</p>
-</div>
-{{/replies}}
-</div>
-{{#js}}
-    require(['local_hackfest/refresh'], function(refresh) {
-        refresh.refresh();
-    });
-{{/js}}

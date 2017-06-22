@@ -33,24 +33,37 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification'], function(
          * @method refresh
          */
         refresh: function() {
-            console.log('refresh in refresh.js fired');
             // Add a click handler to the button.
             $('[data-region="index-page"] #refresh').on('click', function() {
 
+                var msgid = $( '#msgid' ).val();
+
                 // First - reload the data for the page.
-                var promises = ajax.call([{
-                    methodname: 'local_hackfest_get_site_info',
-                    args:{ }
-                }]);
+                var promises = ajax.call([
+//                    { methodname: 'local_hackfest_get_site_info', args:{ } },
+                    { methodname: 'local_hackfest_get_replies', args:{ replyto: msgid } }
+//{ methodname: 'core_get_string', args: { component: 'mod_wiki', stringid: 'pluginname' } }
+                ]);
                 promises[0].done(function(data) {
 
                     // We have the data - lets re-render the template with it.
-                    templates.render('local_hackfest/index_page', data).done(function(html, js) {
-                        $('[data-region="index-page"]').replaceWith(html);
+                    templates.render('local_hackfest/message_replies', data).done(function(html, js) {
+
+                        //$('[data-region="index-page"]').replaceWith(html);
+                        $('[data-region="message-replies-'+msgid+'"]').replaceWith(html);
                         // And execute any JS that was in the template.
                         templates.runTemplateJS(js);
                     }).fail(notification.exception);
                 }).fail(notification.exception);
+/*
+                promises[1].done(function(response) {
+                    //console.log( response );
+                    console.log( 'did promise 1');
+                }).fail(function(ex) {
+                    // do something with the exception
+                    console.log('promise 1 failed');
+                });
+*/
             });
         }
     };

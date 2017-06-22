@@ -1,0 +1,77 @@
+div.replier-self {
+    float: left;
+    width: 65%;
+}
+
+div.replier-self p.message-reply {
+    float: left;
+    clear: both;
+    margin-left:15px;
+    margin-top: 1em;
+    width: 98%;
+}
+
+div.replier-self span.reply-date-header {
+    border-bottom: 3px solid #00acdf;
+    width: 98%;
+    float: left;
+    clear: both;
+    margin-left: 15px;
+
+}
+
+div.replier-self span.reply-date {
+    background-color: #00acdf;
+    padding: 8px 10px 5px 10px;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 10px;
+    position: relative;
+    top: -3px;
+    float: left;
+    clear: both;
+    color: #fff
+}
+
+div.replier-other {
+    float: right;
+    width: 65%;
+    margin-bottom: 1em;
+}
+
+div.replier-other p.message-reply {
+    float: right;
+    clear: both;
+    margin-left:15px;
+    margin-top: 1em;
+    width: 98%;
+}
+
+div.replier-other span.reply-date-header {
+    border-bottom: 3px solid #00acdf;
+    width: 98%;
+    float: right;
+    clear: both;
+    margin-right: 15px;
+
+}
+
+div.replier-other span.reply-date {
+    background-color: #00acdf;
+    padding: 8px 10px 5px 10px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 15px;
+    border-top-right-radius: 10px;
+    position: relative;
+    top: -3px;
+    float: right;
+    clear: both;
+    color: #fff
+}
+
+div.reply-holder {
+    float: left;
+    width: 100%;
+    border: 1px solid #ff0000;
+    margin-bottom: 1em;
+}

@@ -24,3 +24,4 @@
 
 $string['pagetitle'] = 'Page with all the awesome.';
 $string['pluginname'] = 'Hackfest Demo';
+$string['replyby'] = '{$a->replytime} replied on {$a->replytime}';

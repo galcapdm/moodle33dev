@@ -44,10 +44,9 @@ class index_page implements renderable, templatable {
      * @return stdClass
      */
     public function export_for_template(renderer_base $output) {
-        global $DB;
         $data = \core_webservice_external::get_site_info();
+        $data['replies'] = array(array('id'=>1), array('id'=>2), array('id'=>3));
         $data['currenttime'] = userdate(time()) . ' ' . rand();
-        $data['galgal'] = $DB->get_field('user', 'username', array('id'=>2));
 
         return $data;
     }

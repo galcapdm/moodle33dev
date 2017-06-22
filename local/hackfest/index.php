@@ -24,7 +24,6 @@
 
 require_once(__DIR__ . '/../../config.php');
 
-require_login();
 
 $title = get_string('pagetitle', 'local_hackfest');
 $pagetitle = get_string('pagetitle', 'local_hackfest');
@@ -36,6 +35,7 @@ $PAGE->set_title($title);
 $PAGE->set_heading($title);
 $output = $PAGE->get_renderer('local_hackfest');
 echo $output->header();
+
 
 $page = new \local_hackfest\output\index_page();
 echo $output->render($page);
