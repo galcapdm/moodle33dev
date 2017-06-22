@@ -60,8 +60,23 @@ $string['newmessage'] = 'New message';
 $string['mymessages'] = 'My messages';
 $string['nomessagesyet'] = 'Your do not have any helpdesk messages yet. When you do they will be listed here.';
 $string['addnewmessagehere'] = 'New message';
-$string['submitdate'] = 'Date submitted: {$a->datesubmitted}';
-$string['udpatedate'] = 'Date submitted: {$a->dateupdated}';
+$string['submitdate'] = '{$a->datesubmitted}';
+$string['udpatedate'] = '{$a->dateupdated}';
 $string['togglenewform'] = 'Show/hide the new message form';
 $string['waiting'] = 'Loading&hellip;';
-$string['intro'] = 'Use this helpdesk to contact us about any problems you have with using our site. Click on the "plus" icon above to open the form to create a new message. When you submit the form someone will be in touch.';
+$string['intro'] = 'Use this helpdesk to contact us about any problems you have with using our site. Click on the "plus" icon above to open the form to create a new message. When you submit the form someone will be in touch.
+
+Click on a message to see more details and any replies. Click again to close it.';
+$string['replyby'] = '{$a->replier} replied on {$a->replytime}';
+$string['loadingreplies'] = 'Please wait&hellip;loading replies';
+$string['noreplies'] = 'This message does not have any replies at this time.';
+$string['labelorigmessage'] = 'Original message: ';
+$string['labelsubmitdate'] = 'Submit date: ';
+$string['labelsubject'] = 'Subject: ';
+$string['btnshowall'] = 'Show all';
+$string['btnshowopen'] = 'Show only open';
+$string['btnshowclosed'] = 'There are {$a->totalclosed} closed meassages. Click here to view just these messages';
+$string['nopermisson'] = 'Sorry, but you do not have permission to use this service. Please check with your system administrator for further assistance.';
+$string['reload'] = 'Reload messages';
+$string['clicktoview'] = 'Click here to view this message and any replies. Click again to close.';
+$string['reloading'] = 'Reloading messages&hellip;please wait.';

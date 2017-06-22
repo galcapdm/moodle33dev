@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Renderer class for capdmhelpdesk.
+ * Class containing data for list_domains page
  *
  * @package    local_capdmhelpdesk
  * @copyright  2017 CAPDM Ltd - www.capdm.com
@@ -23,33 +23,23 @@
  */
 namespace local_capdmhelpdesk\output;
 
-defined('MOODLE_INTERNAL') || die;
+use renderable;
+use templatable;
+use renderer_base;
+use stdClass;
 
-use plugin_renderer_base;
-
-class renderer extends plugin_renderer_base {
-
-    /**
-     * Defer to template.
-     *
-     * @param header $page
-     *
-     * @return string html for the page
-     */
-    public function render_helpdesk_control($page) {
-        $data = $page->export_for_template($this);
-        return parent::render_from_template('local_capdmhelpdesk/helpdesk_control', $data);
-    }
+class helpdesk_nopermission implements renderable, templatable {
 
     /**
-     * Defer to template.
+     * Export this data so it can be used as the context for a mustache template.
      *
-     * @param header $page
-     *
-     * @return string html for the page
+     * @return stdClass
      */
-    public function render_helpdesk_nopermission($page) {
-        $data = $page->export_for_template($this);
-        return parent::render_from_template('local_capdmhelpdesk/helpdesk_nopermission', $data);
+    public function export_for_template(renderer_base $output) {
+
+        // Define the $data object that is going to be returned plus any common arrays/objects being used.
+        $data = new stdClass();
+      
+        return $data;
     }
 }

@@ -39,22 +39,33 @@
                 </div>
             </div>
 
+            <div id="capdmhelpdesk-control-buttons">
+                <button id="reload" class="btn btn-default helpdesk-control-button" title="{{# str }}reload, local_capdmhelpdesk{{/str}}"><i class="fa fa-repeat"></i></button>
+                <button id="show_all" class="btn btn-default helpdesk-control-button" title="{{# str }}btnshowall, local_capdmhelpdesk{{/str}}">{{# str }}btnshowall, local_capdmhelpdesk{{/str}}</button>
+                <button id="show_open" class="btn btn-default helpdesk-control-button" title="{{# str }}btnshowopen, local_capdmhelpdesk{{/str}}">{{# str }}btnshowopen, local_capdmhelpdesk{{/str}} ({{open}})</button>
+                <button id="show_closed" class="btn btn-default helpdesk-control-button" title="{{# str }}btnshowclosed, local_capdmhelpdesk, { "totalclosed": {{closed}} }{{/str}}">{{# str }}btnshowclosed, local_capdmhelpdesk{{/str}} ({{closed}})</button>
+            </div>
             <!-- Message list holder -->
-            <div id="capdmhelpdesk-msg-list" class="helpdesk-holder">
+            <div data-region="capdmhelpdesk-msg-list" id="capdmhelpdesk-msg-list" class="helpdesk-holder">
                 {{^messages}}
                     <h2 class="light-text">{{# str }}nomessagesyet, local_capdmhelpdesk{{/str}}</h2>
                 {{/messages}}
                 {{#messages}}
-                    <div id="msgid_{{id}}" class="messageholder">
+                    <div id="msgid_{{id}}" class="messageholder-main holder_status_{{status}}" title="{{# str }}clicktoview, local_capdmhelpdesk{{/str}}">
                         <div class="status status_{{status}}">
-                            <div class="messagedetails">
-                                <p class="subjectline">{{subject}}</p>
-                                <p><span class="submitdate">{{# str }} submitdate, local_capdmhelpdesk, { "datesubmitted": {{# quote }}{{submitdate}}{{/ quote }} }{{/str}}</span></p>
+                            <i id="closeicon_{{id}}" class="fa fa-close closeicon_{{status}}" style="display: none;"></i>
+                            <div id="msgid_{{id}}_details" class="messagedetails">
+                                <p><span class="label">{{# str }}labelsubject, local_capdmhelpdesk{{/str}}</span>{{subject}}</p>
+                                <p><span class="label">{{# str }}labelsubmitdate, local_capdmhelpdesk{{/str}}</span>{{# str }} submitdate, local_capdmhelpdesk, { "datesubmitted": {{# quote }}{{submitdate}}{{/ quote }} }{{/str}}</p>
+                                <div id="origmessage_{{id}}"  style="display: none;">
+                                    <p><span class="label">{{# str }}labelorigmessage, local_capdmhelpdesk{{/str}}</span></p>
+                                    <div id="origmessage">{{message}}</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                <div id="msgid_{{id}}_replies" class="messageholder replies" style="display: none;">
-                    <div class="waiting"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i><span class="sr-only">{{# str}}waiting, local_capdmhelpdesk{{/str}}</span></div>
+                <div data-region="msgid_{{id}}_replies" id="msgid_{{id}}_replies" class="messageholder-replies" style="display: none;">
+                    <div class="waiting"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i><span class="sr-only">{{# str}}loadingreplies, local_capdmhelpdesk{{/str}}</span></div>
                 </div>
                 {{/messages}}
             </div>
@@ -69,7 +80,7 @@
                             </div>
                             <div>
                                 <label for"subject">{{#str}}subject, local_capdmhelpdesk{{/str}}</label>
-                                <input id="subject" name="subject" class="form-control" placeholder="Enter a short title here" type="text"></input>
+                                <input id="subject" name="subject" class="form-control" placeholder="Enter a short title here" type="text">
                             </div>
 
                             <div>
@@ -79,10 +90,11 @@
 
                             <div>
                                 <label for"category">{{#str}}category, local_capdmhelpdesk{{/str}}</label>
-                                <input id="category" name="category" class="form-control" type="text"></input>
+                                <input id="category" name="category" class="form-control" type="text">
                             </div>
 
                             <div>
+                                <input id="userid" name="userid" type="hidden" value="{{userid}}">
                                 <button class="btn btn-primary">{{#str}}submit{{/str}}</button>
                             </div>
                             </form>

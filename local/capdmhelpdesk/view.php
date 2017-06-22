@@ -32,7 +32,6 @@ if (empty($userid)) {
 }
 
 $PAGE->set_context(context_system::instance());
-//$PAGE->set_pagelayout('application');
 
 // Set up the page.
 $url = new moodle_url("/local/capdmhelpdesk/view.php", array());
@@ -46,10 +45,19 @@ $output = $PAGE->get_renderer('local_capdmhelpdesk');
 
 echo $output->header();
 
-$helpdeskcontrol = new \local_capdmhelpdesk\output\helpdesk_control();
-echo $output->render($helpdeskcontrol);
+// All helpdesk activities take place in the system context.
+$context = context_system::instance();
 
-$params = [];
-$PAGE->requires->js_call_amd('local_capdmhelpdesk/capdmhelpdesk', 'init', $params);
+if(has_capability('local/capdmhelpdesk:canuse', $context)){
+
+    $helpdeskcontrol = new \local_capdmhelpdesk\output\helpdesk_control();
+    echo $output->render($helpdeskcontrol);
+
+    $params = [];
+    $PAGE->requires->js_call_amd('local_capdmhelpdesk/capdmhelpdesk', 'init', $params);
+} else {
+    $nopermission = new \local_capdmhelpdesk\output\helpdesk_nopermission();
+    echo $output->render($nopermission);
+}
 
 echo $output->footer();

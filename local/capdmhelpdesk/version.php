@@ -22,7 +22,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017053000;              // If version == 0 then module will not be installed
+$plugin->version   = 2017062201;              // If version == 0 then module will not be installed
 $plugin->requires  = 2017050500;              // Requires this Moodle version
 $plugin->cron      = 0;                       // Period for cron to check this module (secs)
 $plugin->component = 'local_capdmhelpdesk';   // To check on upgrade, that module sits in correct place
