@@ -244,7 +244,7 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
     //--------------------------------------------------------------------------
 
     // Function to set and display a helpdesk feedback message
-    function capdmhelpdesk_alert_msg(msg, opt = 0){
+    function capdmhelpdesk_alert_msg(msg, opt){
 
         $('#capdmhelpdesk-feedback').hide(500);
 

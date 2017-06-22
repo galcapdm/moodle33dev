@@ -21,6 +21,8 @@
 
     Example context (json):{}
 }}
+
+
 <div id="capdmhelpdesk-holder" class="container-fluid">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -43,7 +45,7 @@
                 <button id="reload" class="btn btn-default helpdesk-control-button" title="{{# str }}reload, local_capdmhelpdesk{{/str}}"><i class="fa fa-repeat"></i></button>
                 <button id="show_all" class="btn btn-default helpdesk-control-button" title="{{# str }}btnshowall, local_capdmhelpdesk{{/str}}">{{# str }}btnshowall, local_capdmhelpdesk{{/str}}</button>
                 <button id="show_open" class="btn btn-default helpdesk-control-button" title="{{# str }}btnshowopen, local_capdmhelpdesk{{/str}}">{{# str }}btnshowopen, local_capdmhelpdesk{{/str}} ({{open}})</button>
-                <button id="show_closed" class="btn btn-default helpdesk-control-button" title="{{# str }}btnshowclosed, local_capdmhelpdesk, { "totalclosed": {{closed}} }{{/str}}">{{# str }}btnshowclosed, local_capdmhelpdesk{{/str}} ({{closed}})</button>
+                <button id="show_closed" class="btn btn-default helpdesk-control-button" title="{{# str }} btnshowclosed, local_capdmhelpdesk, { 'totalclosed': {{# quote }}{{submitdate}}{{/ quote }} }{{/str}}">{{# str }}btnshowclosed, local_capdmhelpdesk{{/str}} ({{closed}})</button>
             </div>
             <!-- Message list holder -->
             <div data-region="capdmhelpdesk-msg-list" id="capdmhelpdesk-msg-list" class="helpdesk-holder">
@@ -89,8 +91,13 @@
                             </div>
 
                             <div>
+
                                 <label for"category">{{#str}}category, local_capdmhelpdesk{{/str}}</label>
-                                <input id="category" name="category" class="form-control" type="text">
+                                <select id="category">
+                                {{#cats}}
+                                    <option value="{{id}}">{{value}}</option>
+                                {{/cats}}
+                                </select>
                             </div>
 
                             <div>

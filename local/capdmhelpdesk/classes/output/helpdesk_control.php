@@ -47,10 +47,13 @@ class helpdesk_control implements renderable, templatable {
 
         $records = $DB->get_records('capdmhelpdesk_cat');
         $cats = array();
+        $cat = array();
 
         // Build an array of arrays representing the records returned from the query.
         foreach($records as $r){
-            $cats[$r->id] = $r->name;
+            $cat['id'] = $r->id;
+            $cat['value'] = $r->name;
+            array_push($cats, $cat);
         }
 
         // Get the list of helpdesk requests for the supplied userid.
@@ -91,11 +94,10 @@ class helpdesk_control implements renderable, templatable {
                 $message['udpatedate'] = $r->updatedate;
                 array_push($messages, $message);
             }
-
         }
 
-        // Set the value for the list of users to be passed to the template
-        $data->users = $cats;
+        // Set the value for various items sent to the template.
+        $data->cats = $cats;
         $data->messages = $messages;
         $data->userid = $USER->id;
         $data->open = $open;
