@@ -44,8 +44,8 @@
             <div id="capdmhelpdesk-control-buttons">
                 <button id="reload" class="btn btn-default helpdesk-control-button" title="{{# str }}reload, local_capdmhelpdesk{{/str}}"><i class="fa fa-repeat"></i></button>
                 <button id="show_all" class="btn btn-default helpdesk-control-button" title="{{# str }}btnshowall, local_capdmhelpdesk{{/str}}">{{# str }}btnshowall, local_capdmhelpdesk{{/str}}</button>
-                <button id="show_open" class="btn btn-default helpdesk-control-button" title="{{# str }}btnshowopen, local_capdmhelpdesk{{/str}}">{{# str }}btnshowopen, local_capdmhelpdesk{{/str}} ({{open}})</button>
-                <button id="show_closed" class="btn btn-default helpdesk-control-button" title="{{# str }} btnshowclosed, local_capdmhelpdesk, { 'totalclosed': {{# quote }}{{submitdate}}{{/ quote }} }{{/str}}">{{# str }}btnshowclosed, local_capdmhelpdesk{{/str}} ({{closed}})</button>
+                <button id="show_open" class="btn btn-default helpdesk-control-button" title="{{# str }} btnshowopentitle, local_capdmhelpdesk, { "open": {{# quote }}{{open}}{{/ quote }} }{{/str}}">{{# str }}btnshowopen, local_capdmhelpdesk, { "open": {{# quote }}{{open}}{{/ quote }} }{{/str}}</button>
+                <button id="show_closed" class="btn btn-default helpdesk-control-button" title="{{# str }} btnshowclosedtitle, local_capdmhelpdesk, { "totalclosed": {{# quote }}{{closed}}{{/ quote }} }{{/str}}">{{# str }}btnshowclosed, local_capdmhelpdesk, { "closed": {{# quote }}{{closed}}{{/ quote }} }{{/str}}</button>
             </div>
             <!-- Message list holder -->
             <div data-region="capdmhelpdesk-msg-list" id="capdmhelpdesk-msg-list" class="helpdesk-holder">
@@ -53,6 +53,10 @@
                     <h2 class="light-text">{{# str }}nomessagesyet, local_capdmhelpdesk{{/str}}</h2>
                 {{/messages}}
                 {{#messages}}
+                    <div id="action_buttons_{{id}}" class="capdmhelpdesk-action-buttons" style="display: none">
+                        <button id="action_reply_{{id}}" class="btn btn-default btn-sm capdmhelpdesk-action-button" title="{{# str }}replymessagebuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}replymessagebutton, local_capdmhelpdesk{{/str}}</button>
+                        <button id="action_close_{{id}}" class="btn btn-default btn-sm capdmhelpdesk-action-button" title="{{# str }}closemessagebuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}closemessagebutton, local_capdmhelpdesk{{/str}}</button>
+                    </div>
                     <div id="msgid_{{id}}" class="messageholder-main holder_status_{{status}}" title="{{# str }}clicktoview, local_capdmhelpdesk{{/str}}">
                         <div class="status status_{{status}}">
                             <i id="closeicon_{{id}}" class="fa fa-close closeicon_{{status}}" style="display: none;"></i>
@@ -66,6 +70,14 @@
                             </div>
                         </div>
                     </div>
+                <div id="msgid_{{id}}_reply_holder" class="messageholder-replies" style="display: none;">
+                    <form id="form_reply_message" class="form_validate" action="#" method="post">
+                        <textarea id="reply" name="reply" class="form-control" rows="6" placeholder="Enter your reply here..." type="text"></textarea>
+                        <input id="replyto" name="replyto" type="hidden" value="{{id}}">
+                        <input id="replierid" name="replierid" type="hidden" value="{{userid}}">
+                        <button class="btn btn-primary" title="{{#str}}replyformbuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}replyformbutton, local_capdmhelpdesk{{/str}}</button>
+                    </form>
+                </div>
                 <div data-region="msgid_{{id}}_replies" id="msgid_{{id}}_replies" class="messageholder-replies" style="display: none;">
                     <div class="waiting"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i><span class="sr-only">{{# str}}loadingreplies, local_capdmhelpdesk{{/str}}</span></div>
                 </div>
@@ -93,7 +105,8 @@
                             <div>
 
                                 <label for"category">{{#str}}category, local_capdmhelpdesk{{/str}}</label>
-                                <select id="category">
+                                <select id="category" name="category" class="form-control">
+                                    <option value=""></option>
                                 {{#cats}}
                                     <option value="{{id}}">{{value}}</option>
                                 {{/cats}}

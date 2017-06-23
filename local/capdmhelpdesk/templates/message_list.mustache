@@ -27,6 +27,10 @@
         <h2 class="light-text">{{# str }}nomessagesyet, local_capdmhelpdesk{{/str}}</h2>
     {{/messages}}
     {{#messages}}
+        <div id="action_buttons_{{id}}" class="capdmhelpdesk-action-buttons" style="display: none">
+            <button id="action_reply_{{id}}" class="btn btn-default btn-sm capdmhelpdesk-action-button" title="{{# str }}replymessagebuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}replymessagebutton, local_capdmhelpdesk{{/str}}</button>
+            <button id="action_close_{{id}}" class="btn btn-default btn-sm capdmhelpdesk-action-button" title="{{# str }}closemessagebuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}closemessagebutton, local_capdmhelpdesk{{/str}}</button>
+        </div>
         <div id="msgid_{{id}}" class="messageholder-main">
             <div class="status status_{{status}}">
                 <i id="closeicon_{{id}}" class="fa fa-close closeicon_{{status}}" style="display: none;"></i>

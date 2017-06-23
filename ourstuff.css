@@ -1,0 +1,335 @@
+div.helpdesk-holder {
+    width: 100%;
+    z-index: 10;
+}
+
+div#capdmhelpdesk-header {
+    height: 60px;
+    width: 100%
+}
+
+div#capdmhelpdesk-header h1 {
+
+}
+
+div#capdmhelpdesk-header-holder,
+div#capdmhelpdesk-detail-holder {
+    width: 100%;
+    float: left;
+}
+
+div#capdmhelpdesk-msg-list {
+    z-index: 50;
+    margin-left: 0;
+    width: 100%;
+    float: left;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+
+}
+
+div#capdmhelpdesk-new-msg-holder {
+    position: absolute;
+    left: -110%;
+    top: 59px;
+    background-color: #e9efef;
+    padding: 15px;
+    z-index: 100;
+    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+}
+
+form#form_new_message p {
+    font-size: 1.6em;
+}
+
+#capdmhelpdesk-new-msg-holder input,
+#capdmhelpdesk-new-msg-holder textarea,
+#capdmhelpdesk-new-msg-holder label,
+#capdmhelpdesk-new-msg-holder select
+{
+    width: 100%;
+    margin: 0 0 1em 0;
+}
+
+#capdmhelpdesk-new-msg-holder input,
+#capdmhelpdesk-new-msg-holder textarea,
+#capdmhelpdesk-new-msg-holder select
+{
+    padding: 5px 10px;
+}
+
+#capdmhelpdesk-new-msg-holder label {
+    float: left;
+    clear: both;
+}
+
+#capdmhelpdesk_buttons {
+    margin-bottom: 1em;
+    witdh: 100%;
+}
+
+.light-text {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+input#subject + span.form-control-feedback.fa-times,
+input#subject + span.form-control-feedback.fa-check {
+    position: relative;
+    top: -10px;
+    color: green;
+}
+
+input#subject + span.form-control-feedback.fa-times {
+    position: relative;
+    top: -10px;
+    color: darkred;
+}
+
+textarea#message + span.form-control-feedback.fa-check {
+    position: relative;
+    top: -10px;
+    color: green;
+}
+
+textarea#message + span.form-control-feedback.fa-times {
+    position: relative;
+    top: -10px;
+    color: darkred;
+}
+
+input#category + span.form-control-feedback.fa-check {
+    position: relative;
+    top: -10px;
+    color: green;
+}
+
+input#category + span.form-control-feedback.fa-times {
+    position: relative;
+    top: -10px;
+    color: darkred;
+}
+
+.error {
+    color: darkred;
+}
+
+.help-block {
+    position: relative;
+    top: -8px;
+}
+
+#add_new_message {
+    position: absolute;
+    top: -10px;
+    color: #00acdf;
+    font-size: 18px;
+}
+
+#add_new_message:hover {
+    color: #0085ac;
+    cursor: pointer;
+}
+
+#add_new_message i.fa-plus {
+    color: #fff;
+}
+
+div.messageholder-main,
+div.messageholder-replies {
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
+    padding: 0;
+    width: 100%;
+    float: left;
+    border-left: 1px solid rgba(0, 0, 0, 0.8);
+}
+
+div.messageholder-main:last-of-type {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+div.messageholder-main:hover {
+    cursor: pointer;
+}
+
+div.messageholder-main div.status_0 {
+    background-color: rgba(0, 172, 223, 1);
+}
+
+div.messageholder-main div.status_0:hover {
+    background-color: rgba(0, 172, 223, 1);
+}
+
+div.messageholder-main div.status_1 {
+    background-color: rgba(0, 172, 223, 0.2);
+}
+
+div.messageholder-main div.status_1:hover {
+    background-color: rgba(0, 172, 223, 0.2);
+}
+
+div.messageholder-main div.messagedetails {
+    background-color: #fff;
+    margin-left: 15px;
+    padding: 5px;
+
+}
+
+div.messageholder-main div.messagedetails p {
+    font-size: 1em;
+}
+
+div.messageholder-main div.messagedetails p span {
+    font-size: 0.9em;
+}
+
+.fa-rotate-45 {
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.waiting {
+    padding: 15px;
+}
+
+div.replier-You {
+    float: left;
+    width: 65%;
+}
+
+div.replier-You p.message-reply {
+    float: left;
+    clear: both;
+    margin-left:15px;
+    margin-top: 1em;
+    width: 98%;
+}
+
+div.replier-You span.reply-date-header {
+    border-bottom: 3px solid #00acdf;
+    width: 98%;
+    float: left;
+    clear: both;
+    margin-left: 15px;
+}
+
+div.messageholder-replies {
+    background-color: #f7f7f7;
+}
+
+div.messageholder-replies.status_0 {
+    padding: 10px 20px;
+    border-left: 2px dotted rgba(0, 172, 223, 1);
+    margin: 0;
+}
+
+div.messageholder-replies.status_1 {
+    padding: 10px 20px;
+    border-left: 2px dotted rgba(0, 172, 223, 0.2);
+    margin: 0;
+}
+
+div.replier-You span.reply-date {
+    background-color: #00acdf;
+    padding: 8px 10px 5px 10px;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 10px;
+    position: relative;
+    top: -3px;
+    float: left;
+    clear: both;
+    color: #fff
+}
+
+div.replier-other {
+    float: right;
+    width: 65%;
+    margin-bottom: 1em;
+}
+
+div.replier-other p.message-reply {
+    float: right;
+    clear: both;
+    margin-left:15px;
+    margin-top: 1em;
+    width: 98%;
+}
+
+div.replier-other span.reply-date-header {
+    border-bottom: 3px solid #00acdf;
+    width: 98%;
+    float: right;
+    clear: both;
+    margin-right: 15px;
+
+}
+
+div.replier-other span.reply-date {
+    background-color: #00acdf;
+    padding: 8px 10px 5px 10px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 15px;
+    border-top-right-radius: 10px;
+    position: relative;
+    top: -3px;
+    float: right;
+    clear: both;
+    color: #fff
+}
+
+div.reply-holder {
+    float: left;
+    width: 100%;
+    border: 1px solid #ff0000;
+    margin-bottom: 1em;
+}
+
+div#capdmhelpdesk-msg-list span.label,
+div#capdmhelpdesk-msg-list p.label {
+    background-color: transparent;
+    color: inherit;
+}
+
+div#origmessage {
+    margin: 0 1em 1em 1em;
+}
+
+i.closeicon_0 {
+    float: left;
+    margin: 15px 0 0 13px;
+    color: #fff;
+    font-size: 24px;
+}
+
+i.closeicon_1 {
+    float: left;
+    margin: 15px 0 0 13px;
+    color: #000;
+    font-size: 24px;
+}
+
+div#capdmhelpdesk-control-buttons {
+    margin: 1em 0;
+}
+
+div.latestmsg {
+    background-color: rgba(163, 227, 98, 0.8) !important;
+}
+
+p.noreplies {
+    margin: 1em;
+}
+
+.capdmhelpdesk-action-buttons {
+    margin-bottom: 1em;
+}
+
+form#form_reply_message {
+    margin: 1em 1em 1em 50px;
+}
+form#form_reply_message button {
+    margin-top: 1em;
+}

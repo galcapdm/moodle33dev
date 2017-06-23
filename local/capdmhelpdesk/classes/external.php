@@ -207,7 +207,7 @@ class external extends external_api {
             'readflag' => $readflag,
             'params' => $params,
         );
-        //$params = self::validate_parameters(self::get_replies_parameters(), $params);
+        $params = self::validate_parameters(self::save_message_parameters(), $params);
 
 
         // This should be an object but using new stdClass() here causes an error.
@@ -292,6 +292,195 @@ class external extends external_api {
      *  Save new message - END.
      */
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /*  ############################################################################################
+     *  Save reply to message - START.
+     *  ############################################################################################
+     */
+
+    /**
+     * Describes the parameters for save_reply.
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.1
+     */
+    public static function save_reply_parameters() {
+        return new external_function_parameters (
+            array(
+                'replyto' => new external_value(PARAM_INT, 'The ID of the message this reply relates to.'),
+                'message' => new external_value(PARAM_TEXT, 'Text of the reply message.'),
+                'replierid' => new external_value(PARAM_TEXT, 'Moodle ID of who replied.'),
+            )
+        );
+    }
+
+    /**
+     * Saves a reply to an existing message.
+     *
+     * @param   int     $msgid          Original message id.
+     * @param   text    $message        Text of the message.
+     * @param   test    $submitdate     Unix timestamp value.
+     * @param   int     $replierid      Moodle ID of who replied.
+     * @return  array                   Array containing warnings and the orig message replies.
+     * @since   Moodle 3.1
+     * @throws  moodle_exception
+     */
+    public static function save_reply($replyto, $message, $replierid) {
+        global $DB;
+
+        // Build an array for any warnings.
+        $warnings = array();
+
+        // Build an array of the input parameters so they can be checked using
+        // get_replies_parameters to ensure they are of the correct type.
+        $params = array(
+            'replyto' => $replyto,
+            'message' => $message,
+            'replierid' => $replierid,
+        );
+        $params = self::validate_parameters(self::save_reply_parameters(), $params);
+
+
+        // This should be an object but using new stdClass() here causes an error.
+        // So...built as an array and then cast as an object when submitting to the DB.
+        $record = new stdClass();
+        $record->replyto = $replyto;
+        $record->message = $message;
+        $record->submitdate = time();
+        $record->replierid = $replierid;
+
+        // Insert the record into the database table.
+        $ret = $DB->insert_record('capdmhelpdesk_replies', $record);
+
+        // Build an array to hold the itmes to be returned to the template.
+        $result = array();
+        $result['newmsgid'] = $ret;
+        $result['warnings'] = $warnings;    // Any warnings issued.
+
+        // Now return the result array of values.
+        return $result;
+    }
+
+    /**
+     * This checks the data type of the returned
+     * values to make sure they are what is expected.
+     *
+     * @return external_single_structure
+     * @since Moodle 3.1
+     */
+    public static function save_reply_returns() {
+        return new external_single_structure(
+            array(
+                'newmsgid' => new external_value(PARAM_INT, 'ID of the newly inserted message.'),
+                'warnings' => new external_warnings(),
+            )
+        );
+    }
+
+    /*
+     *  Save reply to message - END.
+     */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     /*  ############################################################################################
      *  Reloead messages - START.

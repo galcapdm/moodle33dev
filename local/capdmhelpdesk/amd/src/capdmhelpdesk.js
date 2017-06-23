@@ -8,8 +8,8 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
     $(document).ready(function()
     // ------------------------
     {
-
-        $('.form_validate').each(function () {
+        // Validate new message form - START.
+        $('#form_new_message').each(function () {
             $(this).validate({
                 rules: {
                     subject: "required",
@@ -89,6 +89,76 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
                 }
             });
         });
+        // Validate new message form - END.
+        
+        // Validate reply form - START.
+        $('#form_reply_message').each(function () {
+            
+            console.log('did reply form validation - start');
+            
+            $(this).validate({
+                rules: {
+                    reply: "required",
+                },
+                messages: {
+                    reply: "Please enter a description of the help you are needing",
+                },
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    // Add the `help-block` class to the error element
+                    error.addClass( "help-block" );
+
+                    // Add `has-feedback` class to the parent div.form-group
+                    // in order to add icons to inputs
+                    element.parents( ".col-sm-5" ).addClass( "has-feedback" );
+
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                            error.insertAfter( element.parent( "label" ) );
+                    } else {
+                            error.insertAfter( element );
+                    }
+
+                    // Add the span element, if doesn't exists, and apply the icon classes to it.
+                    if ( !element.next( "span" )[ 0 ] ) {
+                        $( "<span class='icon fa fa-times form-control-feedback'></span>" ).insertAfter( element );
+                    }
+                },
+                success: function ( label, element ) {
+                    // Add the span element, if doesn't exists, and apply the icon classes to it.
+                    if ( !$( element ).next( "span" )[ 0 ] ) {
+                        $( "<span class='icon fa fa-check form-control-feedback'></span>" ).insertAfter( $( element ) );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).parents( ".col-sm-5" ).addClass( "has-error" ).removeClass( "has-success" );
+                    $( element ).next( "span" ).addClass( "fa-times" ).removeClass( "fa-check" );
+                },
+                unhighlight: function ( element, errorClass, validClass ) {
+                    $( element ).parents( ".col-sm-5" ).addClass( "has-success" ).removeClass( "has-error" );
+                    $( element ).next( "span" ).addClass( "fa-check" ).removeClass( "fa-times" );
+                },
+                submitHandler: function ( form ) {
+
+                    var replyMsg = $('#form_reply_message #reply').val();
+                    var replyTo = $('#form_reply_message #replyto').val();
+                    var replierId = $('#form_reply_message #replierid').val();
+
+                    var promises = ajax.call([
+                        { methodname: 'local_capdmhelpdesk_save_reply', args:{ replyto: replyTo, message: replyMsg, replierid: replierId} }
+                    ]);
+                    promises[0].done(function(data) {
+                        // Submit the reply and feedback to the user
+                        $( '#msgid_'+replyTo+'_reply_holder' ).hide(750);
+                        $( '#msgid_'+replyTo+'_reply_holder #form_reply_message #reply' ).text('');
+                        
+                    }).fail(notification.exception);
+
+                    // Always return false so the form does not submit as we want to use Ajax.
+                    return false;
+                }
+            });
+        });
+        // Validate rely forom - END.
     });
 
     // Listeners.
@@ -142,6 +212,9 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
 
         if(! $(this).hasClass('opened') ){
 
+            // Show this message actions buttons
+            $( '#action_buttons_'+id ).show(250);
+
             $( this ).find('.messagedetails').animate({
                 marginLeft: '+=30'
             }, 300, function(){
@@ -172,6 +245,7 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
                 }).fail(notification.exception);
             }).fail(notification.exception);
         } else {
+            $( '#action_buttons_'+id ).hide(250);
             $( '#closeicon_'+id ).fadeOut(200);
             $( this ).find('.messagedetails').animate({
                 marginLeft: '-=30'
@@ -238,6 +312,25 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
             }).fail(notification.exception);
         });
     });
+    
+    // Action buttons
+    $( 'body' ).on('click', '.capdmhelpdesk-action-button', function(){
+        var btnid = $( this ).attr('id');
+        var action = btnid.split('_')[1];
+        var id = btnid.split('_')[2];
+        
+        // Check what is being requested.
+        switch(action){
+            case 'reply':   // Show the reply form.
+                $( '#msgid_'+id+'_reply_holder' ).show(250);
+                break;
+            case 'close':
+                alert('not yet done');
+                break;
+        }
+        
+    });
+    
     // End of listeners.
 
     // Functions.

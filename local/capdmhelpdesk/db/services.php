@@ -42,6 +42,15 @@ $functions = array(
         'capabilities'=> '',
         'ajax'        => 'true',
     ),
+    'local_capdmhelpdesk_save_reply' => array(
+        'classname'   => 'local_capdmhelpdesk\external',
+        'methodname'  => 'save_reply',
+        'classpath'   => '',
+        'description' => 'Save a reply to a helpdesk message.',
+        'type'        => 'read',
+        'capabilities'=> '',
+        'ajax'        => 'true',
+    ),
     'local_capdmhelpdesk_reload_messages' => array(
         'classname'   => 'local_capdmhelpdesk\external',
         'methodname'  => 'reload_messages',
