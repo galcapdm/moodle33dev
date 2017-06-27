@@ -66,9 +66,9 @@ class external extends external_api {
     * Expose to AJAX. This allows this code to be called using AJAX
     * @return boolean
     */
-    public static function get_replies_is_allowed_from_ajax() {
-        return true;
-    }
+//    public static function get_replies_is_allowed_from_ajax() {
+//        return true;
+//    }
 
     /**
      * Returns the list of replies to the supplied message ID.
@@ -100,7 +100,7 @@ class external extends external_api {
         $result['origmessage'] = $status;        // Text of the original message.
         $result['warnings'] = $warnings;    // Any warnings issued.
 
-        $replies = $DB->get_records_sql('select r.id, replyto, r.message, req.message as origmessage, from_unixtime(r.submitdate, \'%D %M %Y %h:%i\') as submitdate, username, case when username is null then \'You\' else concat(firstname, \' \', lastname) end as fullname, case replierid when 0 then \'You\' else \'other\' end as \'originator\', status from {capdmhelpdesk_replies} r left join {user} u on r.replierid = u.id inner join {capdmhelpdesk_requests} req on r.replyto = req.id where replyto = :replyto order by submitdate desc', array('replyto'=>$replyto));
+        $replies = $DB->get_records_sql('select r.id, replyto, r.message, req.message as origmessage, from_unixtime(r.submitdate, \'%D %M %Y %H:%i\') as submitdate, username, case when username is null then \'You\' else concat(firstname, \' \', lastname) end as fullname, case replierid when 0 then \'You\' else \'other\' end as \'originator\', status from {capdmhelpdesk_replies} r left join {user} u on r.replierid = u.id inner join {capdmhelpdesk_requests} req on r.replyto = req.id where replyto = :replyto order by submitdate desc', array('replyto'=>$replyto));
 
         foreach ($replies as $r) {
             $result['replies'][] = array(
@@ -292,61 +292,61 @@ class external extends external_api {
      *  Save new message - END.
      */
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /*  ############################################################################################
      *  Save reply to message - START.
      *  ############################################################################################
@@ -434,53 +434,6 @@ class external extends external_api {
     /*
      *  Save reply to message - END.
      */
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     /*  ############################################################################################
      *  Reloead messages - START.
@@ -584,6 +537,90 @@ class external extends external_api {
 
     /*
      *  Reloead messages - END.
+     */
+
+    /*  ############################################################################################
+     *  Update a message - START.
+     *  ############################################################################################
+     */
+
+    /**
+     * Describes the parameters for update_message.
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.1
+     */
+    public static function update_message_parameters() {
+        return new external_function_parameters (
+            array(
+                'msgid' => new external_value(PARAM_INT, 'The ID of the record to update.'),
+                'field' => new external_value(PARAM_TEXT, 'The name of the field to update.'),
+                'val' => new external_value(PARAM_TEXT, 'Value of the field. As it is variable then must be sent as TEXT.'),
+            )
+        );
+    }
+
+    /**
+     * Updates an existing message.  This can be status or readflag or anything else.
+     *
+     * @param   int     $msgid          ID of the message to update.
+     * @param   text    $field          String value of the field to update.
+     * @param   text    $val            Value for the field.
+     * @return  bool                    Boolean value of update status
+     * @since   Moodle 3.1
+     * @throws  moodle_exception
+     */
+    public static function update_message($msgid, $field, $val) {
+        global $DB;
+
+        // Build an array for any warnings.
+        $warnings = array();
+
+        // Build an array of the input parameters so they can be checked using
+        // update_message_parameters to ensure they are of the correct type.
+        $params = array(
+            'msgid' => $msgid,
+            'field' => $field,
+            'val' => $val,
+        );
+        $params = self::validate_parameters(self::update_message_parameters(), $params);
+
+        // Need to build as an array but then cast as an object to allow
+        // for variable field names.
+        $record = array();
+        $record['id'] = $msgid;
+        $record[$field] = $val;
+
+        // Update the record into the database table.
+        $ret = $DB->update_record('capdmhelpdesk_requests', (object)$record, false);
+
+        // Build an array to hold the itmes to be returned to the template.
+        $result = array();
+        $result['update'] = $ret;
+        $result['warnings'] = $warnings;    // Any warnings issued.
+
+        // Now return the result array of values.
+        return $result;
+    }
+
+    /**
+     * This checks the data type of the returned
+     * values to make sure they are what is expected.
+     *
+     * @return external_single_structure
+     * @since Moodle 3.1
+     */
+    public static function update_message_returns() {
+        return new external_single_structure(
+            array(
+                'update' => new external_value(PARAM_BOOL, 'Boolean value of the update status.'),
+                'warnings' => new external_warnings(),
+            )
+        );
+    }
+
+    /*
+     *  Update message - END.
      */
 
 

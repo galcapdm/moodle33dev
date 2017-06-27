@@ -56,7 +56,9 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
                     $( element ).next( "span" ).addClass( "fa-check" ).removeClass( "fa-times" );
                 },
                 submitHandler: function ( form ) {
-                    var data = $( form ).serialize();
+                    //var data = $( form ).serialize();
+
+                    $( '#new_message_submit' ).attr('disabled', true);
 
                     var newMsg = $('#message').val();
                     var newSub = $('#subject').val();
@@ -79,6 +81,19 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
                             }, 750, function(){
                                 // Show message list in full opacity.
                                 $( '#capdmhelpdesk-msg-list').fadeTo(750, 1);
+                                // Reset the values of the input/select boxes.
+                                $('#message').val('');
+                                $('#subject').val('');
+                                $('#category').val('');
+                                // Enable the submit button again
+                                $( '#new_message_submit' ).attr('disabled', false);
+
+                                $( '#add_new_message' ).toggleClass( 'showingnew' );
+                                $( '#add_new_message' ).toggleClass( 'fa-rotate-45' );
+
+                                $.when(str.get_string('newmessageadded', 'local_capdmhelpdesk')).done(function(localizedEditString) {
+                                    capdmhelpdesk_alert_msg(localizedEditString, 0);
+                                });
                             });
 
                         }).fail(notification.exception);
@@ -90,12 +105,12 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
             });
         });
         // Validate new message form - END.
-        
+
         // Validate reply form - START.
         $('#form_reply_message').each(function () {
-            
+
             console.log('did reply form validation - start');
-            
+
             $(this).validate({
                 rules: {
                     reply: "required",
@@ -144,13 +159,26 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
                     var replierId = $('#form_reply_message #replierid').val();
 
                     var promises = ajax.call([
-                        { methodname: 'local_capdmhelpdesk_save_reply', args:{ replyto: replyTo, message: replyMsg, replierid: replierId} }
+                        { methodname: 'local_capdmhelpdesk_save_reply', args:{ replyto: replyTo, message: replyMsg, replierid: replierId} },
+                        { methodname: 'local_capdmhelpdesk_get_replies', args:{ replyto: replyTo } }
                     ]);
                     promises[0].done(function(data) {
                         // Submit the reply and feedback to the user
                         $( '#msgid_'+replyTo+'_reply_holder' ).hide(750);
                         $( '#msgid_'+replyTo+'_reply_holder #form_reply_message #reply' ).text('');
-                        
+                        // Empty the contents of the reply textarea.
+                        $( '#reply' ).val('');
+
+                    }).fail(notification.exception);
+
+                    // Now reload the replies for this message
+                    promises[1].done(function(data) {
+                        // We have the data - lets re-render the template with it.
+                        templates.render('local_capdmhelpdesk/message_replies', data).done(function(html, js) {
+                            $('[data-region="msgid_'+replyTo+'_replies"]').replaceWith(html);
+                            // And execute any JS that was in the template.
+                            templates.runTemplateJS(js);
+                        }).fail(notification.exception);
                     }).fail(notification.exception);
 
                     // Always return false so the form does not submit as we want to use Ajax.
@@ -165,7 +193,7 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
 
     // Add new message button listener.
     // -------------------------------------------------------------------------
-    $( '#add_new_message').on('click', function(e){
+    $( '#add_new_message' ).on('click', function(e){
         var p = $( '#capdmhelpdesk-holder' );
         var pos = p.offset();
         var nmx = $( '#capdmhelpdesk-new-msg-holder' ).width();
@@ -312,25 +340,41 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
             }).fail(notification.exception);
         });
     });
-    
+
     // Action buttons
     $( 'body' ).on('click', '.capdmhelpdesk-action-button', function(){
         var btnid = $( this ).attr('id');
         var action = btnid.split('_')[1];
         var id = btnid.split('_')[2];
-        
+
         // Check what is being requested.
         switch(action){
             case 'reply':   // Show the reply form.
                 $( '#msgid_'+id+'_reply_holder' ).show(250);
+                // Set focus to the reply textarea.
+                $( '#msgid_'+id+'_reply_holder form textarea#reply' ).focus();
                 break;
             case 'close':
-                alert('not yet done');
+                // Set the status of this message to closed.
+                var promises = ajax.call([
+                    { methodname: 'local_capdmhelpdesk_update_message', args:{ msgid: id, field: 'status', val: 1 } }
+                ]);
+                promises[0].done(function(data) {
+                // We have the data - lets re-render the template with it.
+                //templates.render('local_capdmhelpdesk/message_replies', data).done(function(html, js) {
+//                    $('[data-region="msgid_'+id+'_replies"]').replaceWith(html);
+  //                  // And execute any JS that was in the template.
+//                    templates.runTemplateJS(js);
+console.log(data);
+                    $.when(str.get_string('messageclosed', 'local_capdmhelpdesk')).done(function(localizedEditString) {
+                        capdmhelpdesk_alert_msg(localizedEditString, 0);
+                    });
+                }).fail(notification.exception);
                 break;
         }
-        
+
     });
-    
+
     // End of listeners.
 
     // Functions.

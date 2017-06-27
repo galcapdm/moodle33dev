@@ -59,6 +59,15 @@ $functions = array(
         'type'        => 'read',
         'capabilities'=> '',
         'ajax'        => 'true',
+    ),
+    'local_capdmhelpdesk_update_message' => array(
+        'classname'   => 'local_capdmhelpdesk\external',
+        'methodname'  => 'update_message',
+        'classpath'   => '',
+        'description' => 'Update the current message e.g. close, readflag.',
+        'type'        => 'read',
+        'capabilities'=> '',
+        'ajax'        => 'true',
     )
 );
 

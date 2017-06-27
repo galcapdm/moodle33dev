@@ -97,6 +97,30 @@ textarea#message + span.form-control-feedback.fa-times {
     color: darkred;
 }
 
+textarea#reply + span.form-control-feedback.fa-check {
+    position: relative;
+    top: -10px;
+    color: green;
+}
+
+textarea#reply + span.form-control-feedback.fa-times {
+    position: relative;
+    top: -10px;
+    color: darkred;
+}
+
+select#category + span.form-control-feedback.fa-check {
+    position: relative;
+    top: -10px;
+    color: green;
+}
+
+select#category + span.form-control-feedback.fa-times {
+    position: relative;
+    top: -10px;
+    color: darkred;
+}
+
 input#category + span.form-control-feedback.fa-check {
     position: relative;
     top: -10px;
