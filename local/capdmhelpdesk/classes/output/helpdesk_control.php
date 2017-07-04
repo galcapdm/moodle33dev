@@ -45,14 +45,26 @@ class helpdesk_control implements renderable, templatable {
         $messages = array();
 
 
-        $records = $DB->get_records('capdmhelpdesk_cat');
+        //$records = $DB->get_records_sql('select cat.id, cat.name as cat_name, cat.cat_userid, cat.cat_order as sortorder from {capdmhelpdesk_cat} cat union select id, fullname as cat_name, 0 as cat_userid, sortorder from {course} c where c.id > 1 order by sortorder');
+        $records = $DB->get_records_sql('select r.id, r.userid, r.category, r.subject, cat.cat_name, r.message, r.submitdate, r.updatedate, r.updateby, r.status, r.readflag,
+                                        u.firstname, u.lastname
+                                        from {capdmhelpdesk_requests} r
+                                        inner join (
+                                        select cat.id, cat.name as cat_name, cat.cat_userid, cat.cat_order as sortorder
+                                        from {capdmhelpdesk_cat} cat
+                                        union
+                                        select id, fullname as cat_name, 0 as cat_userid, sortorder from {course} c where c.id > 1 order by sortorder
+                                        ) cat on r.category = cat.id
+                                        left join {user} u on r.updateby = u.id
+                                        where userid = :userid order by submitdate desc', array('userid'=>$USER->id));
+
         $cats = array();
         $cat = array();
 
         // Build an array of arrays representing the records returned from the query.
         foreach($records as $r){
             $cat['id'] = $r->id;
-            $cat['value'] = $r->name;
+            $cat['value'] = $r->cat_name;
             array_push($cats, $cat);
         }
 
@@ -60,7 +72,7 @@ class helpdesk_control implements renderable, templatable {
         $records = $DB->get_records_sql('select * from {capdmhelpdesk_requests} where userid = :userid order by submitdate desc', array('userid' => $userid));
 
         // Get some stats for the helpdesk for the supplied userid.
-        $stats = $DB->get_records_sql('select 1 as id, userid, \'open\' as status, count(id) as totalStatus from mdl_capdmhelpdesk_requests where userid = :userid and status = 0 group by status union select 2 as id, userid,  \'closed\' as status, count(id) as totalStatus from mdl_capdmhelpdesk_requests where userid = 2 and status = 1 group by status union select 3 as id, userid, \'unread\' as status, count(id) as totalStatus from mdl_capdmhelpdesk_requests where userid = 2 and readflag = 0 group by readflag', array('userid' => $userid));
+        $stats = $DB->get_records_sql('select 1 as id, userid, \'open\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where userid = :userid1 and status = 0 group by status union select 2 as id, userid,  \'closed\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where userid = :userid2 and status = 1 group by status union select 3 as id, userid, \'unread\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where userid = :userid3 and readflag = 0 group by readflag', array('userid1' => $userid, 'userid2' => $userid, 'userid3' => $userid));
 
         foreach($stats as $s){
             switch($s->status){

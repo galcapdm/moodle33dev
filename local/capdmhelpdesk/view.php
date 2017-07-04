@@ -23,6 +23,7 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/locallib.php');
 
 if (empty($userid)) {
     if (!isloggedin()) {
@@ -59,5 +60,7 @@ if(has_capability('local/capdmhelpdesk:canuse', $context)){
     $nopermission = new \local_capdmhelpdesk\output\helpdesk_nopermission();
     echo $output->render($nopermission);
 }
+
+echo(capdmhelpdesk_send_notification($USER, 1));
 
 echo $output->footer();

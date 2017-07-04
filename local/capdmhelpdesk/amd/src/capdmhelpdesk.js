@@ -166,6 +166,7 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
                         // Submit the reply and feedback to the user
                         $( '#msgid_'+replyTo+'_reply_holder' ).hide(750);
                         $( '#msgid_'+replyTo+'_reply_holder #form_reply_message #reply' ).text('');
+
                         // Empty the contents of the reply textarea.
                         $( '#reply' ).val('');
 
@@ -293,7 +294,22 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
     // Show only the selected types of message based on status.
     $( 'body' ).on( 'click', '.helpdesk-control-button', function(e){
         var btnid = $( this ).attr('id');
-        var show = btnid.split('_')[1];
+        var show = btnid.split( '_' )[1];
+
+        // Hide any action buttons if shown
+        $( '.capdmhelpdesk-action-buttons' ).hide(300);
+        $( '.messageholder-replies' ).hide(300);
+        // Close any opened messages.
+        $( '.opened div.messagedetails' ).animate({
+            marginLeft: '-=30'
+        }, 300, function(){
+            // Callback.
+        });
+        var openelement = $( '.opened' ).attr( 'id' );
+        if( openelement ){
+            $( '.opened' ).removeClass( 'opened' );
+            $( '#closeicon_'+openelement.split( '_' )[1] ).fadeOut(200);
+        }
 
         switch(show){
             case 'all':
@@ -369,6 +385,8 @@ console.log(data);
                     $.when(str.get_string('messageclosed', 'local_capdmhelpdesk')).done(function(localizedEditString) {
                         capdmhelpdesk_alert_msg(localizedEditString, 0);
                     });
+                    $( '#msgid_'+id+' div.status' ).removeClass('status_0');
+                    $( '#msgid_'+id+' div.status' ).addClass('status_1');
                 }).fail(notification.exception);
                 break;
         }

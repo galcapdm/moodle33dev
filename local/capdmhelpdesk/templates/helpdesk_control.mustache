@@ -55,12 +55,18 @@
                 {{#messages}}
                     <div id="action_buttons_{{id}}" class="capdmhelpdesk-action-buttons" style="display: none">
                         <button id="action_reply_{{id}}" class="btn btn-default btn-sm capdmhelpdesk-action-button" title="{{# str }}replymessagebuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}replymessagebutton, local_capdmhelpdesk{{/str}}</button>
-                        <button id="action_close_{{id}}" class="btn btn-default btn-sm capdmhelpdesk-action-button" title="{{# str }}closemessagebuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}closemessagebutton, local_capdmhelpdesk{{/str}}</button>
+                        {{#status}}
+                            <span class="alreadyclosed">{{# str }}alreadyclosed, local_capdmhelpdesk{{/str}}</span>
+                        {{/status}}
+                        {{^status}}
+                            <button id="action_close_{{id}}" class="btn btn-default btn-sm capdmhelpdesk-action-button" title="{{# str }}closemessagebuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}closemessagebutton, local_capdmhelpdesk{{/str}}</button>
+                        {{/status}}
                     </div>
                     <div id="msgid_{{id}}" class="messageholder-main holder_status_{{status}}" title="{{# str }}clicktoview, local_capdmhelpdesk{{/str}}">
                         <div class="status status_{{status}}">
                             <i id="closeicon_{{id}}" class="fa fa-close closeicon_{{status}}" style="display: none;"></i>
                             <div id="msgid_{{id}}_details" class="messagedetails">
+                                <p><span class="label">{{# str }}msgid, local_capdmhelpdesk{{/str}}</span>{{id}}</p>
                                 <p><span class="label">{{# str }}labelsubject, local_capdmhelpdesk{{/str}}</span>{{subject}}</p>
                                 <p><span class="label">{{# str }}labelsubmitdate, local_capdmhelpdesk{{/str}}</span>{{# str }} submitdate, local_capdmhelpdesk, { "datesubmitted": {{# quote }}{{submitdate}}{{/ quote }} }{{/str}}</p>
                                 <div id="origmessage_{{id}}"  style="display: none;">

@@ -43,36 +43,29 @@ defined('MOODLE_INTERNAL') || die();
 
 		$enquirer = new stdClass();
 		$enquirer->email = $objMsgDetails->email;
-		$enquirer->fname = $objMsgDetails->fname;
-		$enquirer->lname = $objMsgDetails->lname;
+		$enquirer->firstname = $objMsgDetails->firstname;
+		$enquirer->lastname = $objMsgDetails->lastname;
+                $enquirer->username = 'admin';
 		$enquirer->id = 2;	// junk value to get the email notification to work
 
-		// look up the tutor for the course selected - this could be more than one!
-                $admins = $DB->get_field('capdmhelpdesk_config', 'content', array('type'=>'admins'));
+                $sender = core_user::get_support_user();
 
 		$link = $CFG->wwwroot.'/local/capdmhelpdesk/view.php?menuid=1&thisaction=2&id='.$msgID;
 		$body = get_string('newmessagebody','local_capdmhelpdesk', array('link'=>$link));
-		if($objMsgDetails->callme == '1'){
-			$body .= get_string('callback_requested', 'local_capdmhelpdesk');
-		}
 		$subject = get_string('newmessagesubject','local_capdmhelpdesk');
-		
-		$allAdmins = explode('~', $admins);
-		// Get the site admin details
-		$admin = get_admin();
-		
-		// now send and email to those uses listed in the admins config list
-		foreach($allAdmins as $a){
-			$thisAdmin = $DB->get_record('user', array('username'=>$a));
-			email_to_user($thisAdmin, $admin, $subject, $body);
-		}
-		
+
+                // now send and email to those uses listed in the admins config list
+//		foreach($allAdmins as $a){
+			//$thisAdmin = $DB->get_record('user', array('username'=>$a));
+			//email_to_user($thisAdmin, $admin, $subject, $body);
+		//}
+
 		// send an acknowledgement to the user
-		email_to_user($enquirer, $admin, get_string('newmessagesubject_user','local_capdmhelpdesk'), get_string('newmessagebody_user','local_capdmhelpdesk', array('fname'=>$enquirer->fname, 'site'=>$SITE->fullname)));
+		email_to_user($enquirer, $sender, get_string('newmessagesubject_user','local_capdmhelpdesk'), get_string('newmessagebody_user','local_capdmhelpdesk', array('fname'=>$enquirer->firstname, 'site'=>$SITE->fullname)));
 
 		return true;
 	}
-	
+
 	/**
 	*	This function displays messages in a formatted box
 	*
@@ -82,16 +75,16 @@ defined('MOODLE_INTERNAL') || die();
 	function capdmhelpdesk_message($msg, $type='alert-info'){
 
 		$output ='';
-                
+
                 // set the bootstrap alert message style for this message
 		$type = 'alert '.$type;
-                
+
 		$output .= html_writer::tag('p', $msg, array('class'=>$type));
 
 		return $output;
 
 	}
-	
+
 	/**
 	*	This function checks the supplied userid to see if they are defined as a capdmhelpdesk admin
 	*
@@ -99,23 +92,23 @@ defined('MOODLE_INTERNAL') || die();
 	*	@return boolean
 	*/
 	function capdmhelpdesk_is_admin($username){
-	
+
 		// admin will always get in!
 		if($username == 'admin'){
 			return true;
 		} else {
 			global $DB;
-			
+
 			// look up the tutor for the course selected - this could be more than one!
 			$admins = $DB->get_field('capdmhelpdesk_config', 'content', array('type'=>'admins'));
-			
+
 			$allAdmins = explode('~', $admins);
-	
+
 			if(in_array($username, $allAdmins)){
 				return true;
 			}
-			
+
 			return false;
-		}		
-		
+		}
+
 	}
