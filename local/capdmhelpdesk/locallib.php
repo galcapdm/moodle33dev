@@ -35,17 +35,17 @@ defined('MOODLE_INTERNAL') || die();
 	*	@param $msg_details = an object of info to use for sending the message
 	*	@return string
 	*/
-	function capdmhelpdesk_send_notification($objMsgDetails, $msgID){
+	function capdmhelpdesk_send_notification($objRecipient, $msgID){
 
 		global $DB, $USER, $CFG, $SITE;
 
 		$output = '';
 
 		$enquirer = new stdClass();
-		$enquirer->email = $objMsgDetails->email;
-		$enquirer->firstname = $objMsgDetails->firstname;
-		$enquirer->lastname = $objMsgDetails->lastname;
-                $enquirer->username = 'admin';
+		$enquirer->email = $objRecipient->email;
+		$enquirer->firstname = $objRecipient->firstname;
+		$enquirer->lastname = $objRecipient->lastname;
+                $enquirer->username = 'admin from the code';
 		$enquirer->id = 2;	// junk value to get the email notification to work
 
                 $sender = core_user::get_support_user();
@@ -59,9 +59,33 @@ defined('MOODLE_INTERNAL') || die();
 			//$thisAdmin = $DB->get_record('user', array('username'=>$a));
 			//email_to_user($thisAdmin, $admin, $subject, $body);
 		//}
+                
+                // Set boolean for notifying admins to false by default.
+                $notify_admins = false;
+                
+                switch($msgID){
+                    case 'new':
+                        $subject = get_string('helpdesk_new_subject_user','local_capdmhelpdesk', array('site'=>$SITE->fullname));
+                        $msg = get_string('helpdesk_new_message_thanks','local_capdmhelpdesk', array('fname'=>$objRecipient->firstname, 'site'=>$SITE->fullname));
+                        // Set admins message.
+                        $subject_admins = get_string('helpdesk_new_subject_admin','local_capdmhelpdesk', array('site'=>$SITE->fullname));
+                        $msg_admins = get_string('helpdesk_new_message_admin','local_capdmhelpdesk', array('fname'=>$objRecipient->firstname, 'site'=>$SITE->fullname));
+                        // Need to notify admins also.
+                        $notify_admins = true;
+                        break;
+                    
+                }
 
-		// send an acknowledgement to the user
-		email_to_user($enquirer, $sender, get_string('newmessagesubject_user','local_capdmhelpdesk'), get_string('newmessagebody_user','local_capdmhelpdesk', array('fname'=>$enquirer->firstname, 'site'=>$SITE->fullname)));
+                // Hack for now.
+                $admins = $sender;
+                
+		// Send an acknowledgement to the user.
+		email_to_user($objRecipient, $sender, $subject, $msg);
+                
+                // If need to notify admins then do it to all.
+                if($notify_admins){
+                    email_to_user($admins, $sender, $subject_admins, $msg_admins);
+                }
 
 		return true;
 	}

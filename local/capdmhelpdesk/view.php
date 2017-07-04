@@ -61,6 +61,6 @@ if(has_capability('local/capdmhelpdesk:canuse', $context)){
     echo $output->render($nopermission);
 }
 
-echo(capdmhelpdesk_send_notification($USER, 1));
+//echo(capdmhelpdesk_send_notification($USER, 1));
 
 echo $output->footer();

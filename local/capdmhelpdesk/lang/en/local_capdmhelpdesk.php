@@ -92,3 +92,145 @@ $string['replyformbuttontitle'] = 'Click here to add your reply.';
 $string['newmessageadded'] = 'Your message has been added and the relevant person notified.';
 $string['messageclosed'] = 'This message has been closed.';
 $string['alreadyclosed'] = 'This message has been closed. To reopen smimply add a reply and it will automatically be re-opened and the relevant person nootified.';
+
+
+
+$string['helpdesk_new_message_thanks'] = 'Dear {$a->fname}
+
+This message is just to confirm your Helpdesk request has been received and the relevant person has been notified. If your request requires an answer you will be notified via email when this is done and you can return to your Helpdesk to view the update.
+
+Regards
+
+{$a->site}';
+$string['helpdesk_new_subject_user'] = 'Confirmation of your Helpdesk request at {$a->site}';
+
+$string['helpdesk_new_message_admin'] = 'Dear {$a->fname}
+
+A new helpdesk message at {$a->site} has been received and requires your attention.  Please log in and check.
+
+Message from : this needs completed
+Subject : this needs completed also
+
+Regards
+
+{$a->site}';
+
+
+
+$string['helpdesk_new_subject_admin'] = 'A new helpdesk message has been submitted for you at {$a->site}';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$string['helpdesk_new_direct'] = 'Success&hellip;a new message has been saved in the helpdesk for "{$a->user}" and they have been notified via email.';
+$string['helpdesk_new_direct_error'] = 'Oops&hellip;there was a problem sending the email notification of a Helpdesk direct message. Please seek assistance from the System Administrator.';
+$string['helpdesk_direct_error'] = 'Oops&hellip;there was a problem writing to the database for your direct message. Please seek assistance from the System Admiistrator.';
+$string['helpdesk_reply_thanks'] = 'Thank you for your update. The relevant person has been notified via email that there is an update to this Helpdesk message.';
+
+
+$string['helpdesk_reopen_thanks'] = 'Thank you for your message. A confirmation email has been sent to {$a->email} and if your message requires a reply then you will recieve an email telling you when this has been done.';
+$string['helpdesk_reopen_subject'] = 'Confirmation of your Helpdesk request at {$a->site}';
+$string['helpdesk_direct_msg_body_user'] = 'Dear {$a->fname}
+
+A new message has been added to your helpdesk list and requires your attention. To read this message then all you need to do is log in to your account at {$a->site} and click on the Helpdesk tab on your My Details home page.
+
+Regards
+
+{$a->sender}';
+$string['helpdesk_direct_msg_subject_user'] = 'A new message is waiting for you at {$a->site}';
+
+
+$string['helpdesk_new_subject'] = 'A Helpdesk message has been posted at {$a->site} and requires your attention';
+$string['helpdesk_new_body'] = 'Dear Admin/Tutor,
+
+A new Helpdesk message has been posted that requires your attention. This has been logged against a category that you have responsibility for.  Simply log into {$a->site} and then click on the helpdesk tab to view the latest heldesk requests.
+
+Here is a link to the message:
+{$a->link}
+
+Regards
+
+System Administrator';
+$string['helpdesk_reply_subject_tutor'] = 'A Helpdesk message at {$a->site} you are an admin for has been udpated';
+$string['helpdesk_reply_subject_user'] = 'Your Helpdesk message at {$a->site} has been udpated';
+$string['helpdesk_reply_body_user'] = 'Dear {$a->fname},
+
+A Helpdesk message you sumitted has received a reply. Simply log into {$a->site} and then click on the helpdesk tab to view this update.
+
+Regards
+
+{$a->site}
+System Administrator';
+$string['helpdesk_reply_body'] = 'Dear {$a->fullname},
+
+A Helpdesk message you are an admin for has had a reply posted and requires your attention. Simply log into {$a->site} and then click on the helpdesk tab to view the latest heldesk requests.
+
+Messge Ref ID # - {$a->newRecID}
+Message subject - {$a->subject}
+Posted by - {$a->origuser}
+
+Regards
+
+{$a->site}
+System Administrator';
+$string['helpdesk_reopen_body_user'] = 'Dear {$a->fname}
+
+This message is just to confirm your Helpdesk request has been received and the relevant person has been notified. If your request requires an answer then you will be notified via email when this is done and you can return to your Helpdesk tickets to view the update.
+
+Regards
+
+System Administrator';
+$string['helpdesk_reopen_subject'] = 'A Helpdesk message has been posted at {$a->site} and requires your attention';
+$string['helpdesk_reopen_subject_user'] = 'Confirmation of your Helpdesk request at {$a->site}';
+$string['helpdesk_reopen_body'] = 'Dear Admin/Tutor,
+
+A Helpdesk message has been reopened that requires your attention. This has been logged against a category that you have responsibility for.  Simply log into {$a->site} and then click on the helpdesk tab to view the latest heldesk requests.
+
+Here is a link to the message:
+{$a->link)
+
+Regards
+
+System Administrator';
+
+
+$string['helpdesk_reopen_subject'] = 'Confirmation of your Helpdesk request at {$a->site}';
+$string['helpdesk_new_body_user'] = 'Dear {$a->fname}
+
+This message is just to confirm your Helpdesk request has been received and the relevant person has been notified. If your request requires an answer then you will be notified via email when this is done and you can return to your Helpdesk tickets to view the update.
+
+Regards
+
+System Administrator';

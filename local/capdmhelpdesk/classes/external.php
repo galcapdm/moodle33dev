@@ -25,6 +25,7 @@ namespace local_capdmhelpdesk;
 
 require_once("$CFG->libdir/externallib.php");
 require_once("$CFG->dirroot/webservice/externallib.php");
+require_once(__DIR__ . '/../locallib.php');
 
 use external_api;
 use external_function_parameters;
@@ -80,8 +81,10 @@ class external extends external_api {
      * @throws  moodle_exception
      */
     public static function get_replies($replyto = 0) {
-        global $DB;
+        global $DB, $PAGE;
 
+        $PAGE->set_context();
+        
         // Build an array for any warnings.
         $warnings = array();
 
@@ -190,7 +193,10 @@ class external extends external_api {
      * @throws  moodle_exception
      */
     public static function save_message($userid, $category, $subject, $message, $updateby, $status, $readflag, $params) {
-        global $DB;
+        global $DB, $PAGE;
+        
+        // Need this for email notifications to work!
+        $PAGE->set_context();
 
         // Build an array for any warnings.
         $warnings = array();
@@ -226,6 +232,13 @@ class external extends external_api {
 
         // Insert the record into the database table.
         $ret = $DB->insert_record('capdmhelpdesk_requests', $record);
+        
+        // If successfully saved then send confirmation email to user and notify email to tutors/admins.
+        if($ret){
+            // Need to look up the user details of who posted the message.
+            $user = $DB->get_record('user', array('id'=>$userid));
+            $ret = capdmhelpdesk_send_notification($user, 'new');            
+        }
 
         // Build an array to hold the itmes to be returned to the template.
         $result = array();
