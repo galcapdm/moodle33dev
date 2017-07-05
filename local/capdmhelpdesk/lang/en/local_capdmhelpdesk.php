@@ -61,7 +61,7 @@ $string['mymessages'] = 'My messages';
 $string['nomessagesyet'] = 'Your do not have any helpdesk messages yet. When you do they will be listed here.';
 $string['addnewmessagehere'] = 'New message';
 $string['submitdate'] = '{$a->datesubmitted}';
-$string['udpatedate'] = '{$a->dateupdated}';
+$string['updatedate'] = '{$a->dateupdated} by {$a->fullname}';
 $string['togglenewform'] = 'Show/hide the new message form';
 $string['waiting'] = 'Loading&hellip;';
 $string['intro'] = 'Use this helpdesk to contact us about any problems you have with using our site. Click on the "plus" icon above to open the form to create a new message. When you submit the form someone will be in touch.
@@ -72,6 +72,7 @@ $string['loadingreplies'] = 'Please wait&hellip;loading replies';
 $string['noreplies'] = 'This message does not have any replies at this time.';
 $string['labelorigmessage'] = 'Original message: ';
 $string['labelsubmitdate'] = 'Submit date: ';
+$string['labelupdatedate'] = 'Updated: ';
 $string['labelsubject'] = 'Subject: ';
 $string['msgid'] = 'Message ID:';
 $string['btnshowall'] = 'Show all';
@@ -92,7 +93,7 @@ $string['replyformbuttontitle'] = 'Click here to add your reply.';
 $string['newmessageadded'] = 'Your message has been added and the relevant person notified.';
 $string['messageclosed'] = 'This message has been closed.';
 $string['alreadyclosed'] = 'This message has been closed. To reopen smimply add a reply and it will automatically be re-opened and the relevant person nootified.';
-
+$string['sendingnewmessage'] = 'Please wait&hellip;saving your message and sending confirmation emails.';
 
 
 $string['helpdesk_new_message_thanks'] = 'Dear {$a->fname}

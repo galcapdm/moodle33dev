@@ -42,6 +42,7 @@
             </div>
 
             <div id="capdmhelpdesk-control-buttons">
+                <button id="test">TEST</button>
                 <button id="reload" class="btn btn-default helpdesk-control-button" title="{{# str }}reload, local_capdmhelpdesk{{/str}}"><i class="fa fa-repeat"></i></button>
                 <button id="show_all" class="btn btn-default helpdesk-control-button" title="{{# str }}btnshowall, local_capdmhelpdesk{{/str}}">{{# str }}btnshowall, local_capdmhelpdesk{{/str}}</button>
                 <button id="show_open" class="btn btn-default helpdesk-control-button" title="{{# str }} btnshowopentitle, local_capdmhelpdesk, { "open": {{# quote }}{{open}}{{/ quote }} }{{/str}}">{{# str }}btnshowopen, local_capdmhelpdesk, { "open": {{# quote }}{{open}}{{/ quote }} }{{/str}}</button>
@@ -69,6 +70,12 @@
                                 <p><span class="label">{{# str }}msgid, local_capdmhelpdesk{{/str}}</span>{{id}}</p>
                                 <p><span class="label">{{# str }}labelsubject, local_capdmhelpdesk{{/str}}</span>{{subject}}</p>
                                 <p><span class="label">{{# str }}labelsubmitdate, local_capdmhelpdesk{{/str}}</span>{{# str }} submitdate, local_capdmhelpdesk, { "datesubmitted": {{# quote }}{{submitdate}}{{/ quote }} }{{/str}}</p>
+                            {{#updatedate}}
+                                <p class="updated"><span class="label">{{# str }}labelupdatedate, local_capdmhelpdesk{{/str}}</span>{{# str }} updatedate, local_capdmhelpdesk, { "dateupdated": {{# quote }}{{updatedate}}{{/ quote }}, "fullname": {{# quote }}{{firstname}} {{lastname}}{{/ quote }} }{{/str}}</p>
+                            {{/updatedate}}
+                            {{^updatedate}}
+                            {{/updatedate}}
+
                                 <div id="origmessage_{{id}}"  style="display: none;">
                                     <p><span class="label">{{# str }}labelorigmessage, local_capdmhelpdesk{{/str}}</span></p>
                                     <div id="origmessage">{{message}}</div>
@@ -91,7 +98,15 @@
             </div>
             <!-- New message holder -->
             <div id="capdmhelpdesk-new-msg-holder" class="helpdesk-holder">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div id="new_message_waiting" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 waitingmessage" style="display: none;">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <p><i class="fa fa-spinner fa-pulse fa-4x fa-fw"></i></p>
+                            <h3>{{# str}}sendingnewmessage, local_capdmhelpdesk{{/str}}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div id="new_message_form" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <form id="form_new_message" class="form_validate" action="#" method="post">

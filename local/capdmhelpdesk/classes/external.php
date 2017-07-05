@@ -84,7 +84,7 @@ class external extends external_api {
         global $DB, $PAGE;
 
         $PAGE->set_context();
-        
+
         // Build an array for any warnings.
         $warnings = array();
 
@@ -194,7 +194,7 @@ class external extends external_api {
      */
     public static function save_message($userid, $category, $subject, $message, $updateby, $status, $readflag, $params) {
         global $DB, $PAGE;
-        
+
         // Need this for email notifications to work!
         $PAGE->set_context();
 
@@ -232,12 +232,12 @@ class external extends external_api {
 
         // Insert the record into the database table.
         $ret = $DB->insert_record('capdmhelpdesk_requests', $record);
-        
+
         // If successfully saved then send confirmation email to user and notify email to tutors/admins.
         if($ret){
             // Need to look up the user details of who posted the message.
             $user = $DB->get_record('user', array('id'=>$userid));
-            $ret = capdmhelpdesk_send_notification($user, 'new');            
+            $ret = capdmhelpdesk_send_notification($user, 'new');
         }
 
         // Build an array to hold the itmes to be returned to the template.
@@ -505,16 +505,16 @@ class external extends external_api {
         $result['warnings'] = $warnings;    // Any warnings issued.
 
         $messages = $DB->get_records_sql('select r.id, r.userid, r.category, r.subject, cat.cat_name, r.message, r.submitdate, r.updatedate, r.updateby, r.status, r.readflag,
-                                            u.firstname, u.lastname
-                                            from {capdmhelpdesk_requests} r
-                                            inner join (
-                                            select cat.id, cat.name as cat_name, cat.cat_userid, cat.cat_order as sortorder
-                                            from {capdmhelpdesk_cat} cat
-                                            union
-                                            select id, fullname as cat_name, 0 as cat_userid, sortorder from {course} c where c.id > 1 order by sortorder
-                                            ) cat on r.category = cat.id
-                                            left join {user} u on r.updateby = u.id
-                                            where userid = :userid order by submitdate desc', array('userid'=>$userid));
+                                        u.firstname, u.lastname
+                                        from {capdmhelpdesk_requests} r
+                                        inner join (
+                                        select cat.id, cat.name as cat_name, cat.cat_userid, cat.cat_order as sortorder
+                                        from {capdmhelpdesk_cat} cat
+                                        union
+                                        select id, fullname as cat_name, 0 as cat_userid, sortorder from {course} c where c.id > 1 order by sortorder
+                                        ) cat on r.category = cat.id
+                                        left join {user} u on r.updateby = u.id
+                                        where userid = :userid order by submitdate desc', array('userid'=>$userid));
 
         foreach ($messages as $m) {
             $dateSub = date(DATE_RFC2822, $m->submitdate);

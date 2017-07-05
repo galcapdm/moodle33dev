@@ -60,6 +60,9 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
 
                     $( '#new_message_submit' ).attr('disabled', true);
 
+                    // Hide the form and show an information message as sending emails can cause a delay
+                    toggleNewForm(0);
+
                     var newMsg = $('#message').val();
                     var newSub = $('#subject').val();
                     var catVal = $('#category').val();
@@ -86,6 +89,9 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
                                 $('#subject').val('');
                                 $('#category').val('');
                                 // Enable the submit button again
+                                var validator = $( '#form_new_message' ).validate();
+                                validator.resetForm();
+
                                 $( '#new_message_submit' ).attr('disabled', false);
 
                                 $( '#add_new_message' ).toggleClass( 'showingnew' );
@@ -393,10 +399,34 @@ console.log(data);
 
     });
 
+    $( 'body' ).on('click', '#test', function(){
+
+        toggleNewForm(0);
+
+    });
+
     // End of listeners.
 
     // Functions.
     //--------------------------------------------------------------------------
+
+    // Function to toggle visibility of new message holding message
+    function toggleNewForm(direction){
+
+        var msg = $( '#new_message_waiting' );
+        var form = $( '#new_message_form' );
+
+        switch(direction){
+            case 0:
+                form.hide(300);
+                msg.show(300);
+                break;
+            case 1:
+                msg.hide(300);
+                form.show(300);
+                break;
+        }
+    }
 
     // Function to set and display a helpdesk feedback message
     function capdmhelpdesk_alert_msg(msg, opt){

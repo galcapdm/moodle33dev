@@ -359,7 +359,7 @@ form#form_reply_message button {
     margin-top: 1em;
 }
 
-span.alreadyclosed {
+span.alreadyclosed, p.updated {
      background-color: #00acdf;
      padding: 10px 10px 10px 10px;
      border-radius: 5px;
@@ -370,4 +370,8 @@ span.alreadyclosed {
      clear: both;
      color: #fff;
      margin-left: 1em;
+}
+
+div#capdmhelpdesk-new-msg-holder div.waitingmessage * {
+    text-align: center;
 }

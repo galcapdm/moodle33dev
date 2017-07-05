@@ -69,7 +69,19 @@ class helpdesk_control implements renderable, templatable {
         }
 
         // Get the list of helpdesk requests for the supplied userid.
-        $records = $DB->get_records_sql('select * from {capdmhelpdesk_requests} where userid = :userid order by submitdate desc', array('userid' => $userid));
+        //$records = $DB->get_records_sql('select * from {capdmhelpdesk_requests} where userid = :userid order by submitdate desc', array('userid' => $userid));
+        $records = $DB->get_records_sql('select r.id, r.userid, r.category, r.subject, cat.cat_name, r.message, r.submitdate, case r.updatedate when 0 then \'NA\' else r.updatedate end as updatedate, r.updateby, r.status, r.readflag,
+                                        u.firstname, u.lastname
+                                        from {capdmhelpdesk_requests} r
+                                        inner join (
+                                        select cat.id, cat.name as cat_name, cat.cat_userid, cat.cat_order as sortorder
+                                        from {capdmhelpdesk_cat} cat
+                                        union
+                                        select id, fullname as cat_name, 0 as cat_userid, sortorder from {course} c where c.id > 1 order by sortorder
+                                        ) cat on r.category = cat.id
+                                        left join {user} u on r.updateby = u.id
+                                        where userid = :userid order by submitdate desc', array('userid'=>$USER->id));
+
 
         // Get some stats for the helpdesk for the supplied userid.
         $stats = $DB->get_records_sql('select 1 as id, userid, \'open\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where userid = :userid1 and status = 0 group by status union select 2 as id, userid,  \'closed\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where userid = :userid2 and status = 1 group by status union select 3 as id, userid, \'unread\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where userid = :userid3 and readflag = 0 group by readflag', array('userid1' => $userid, 'userid2' => $userid, 'userid3' => $userid));
@@ -92,20 +104,38 @@ class helpdesk_control implements renderable, templatable {
 
         // Build an array of arrays representing the records returned from the query.
         if($records){
+            $updated = false;
             // Now loop through the records to build the data->messages array.
             foreach($records as $r){
                 $dateSub = date(DATE_RFC2822, $r->submitdate);
 
-                $message['id'] = $r->id;
-                $message['category'] = $r->category;
-                $message['subject'] = $r->subject;
-                $message['message'] = $r->message;
-                $message['status'] = $r->status;
-                $message['readflag'] = $r->readflag;
-                $message['submitdate'] = $dateSub;
-                $message['udpatedate'] = $r->updatedate;
+                if($r->updatedate === 'NA'){
+                    $message['id'] = $r->id;
+                    $message['category'] = $r->category;
+                    $message['subject'] = $r->subject;
+                    $message['message'] = $r->message;
+                    $message['status'] = $r->status;
+                    $message['readflag'] = $r->readflag;
+                    $message['submitdate'] = $dateSub;
+                } else {
+                    $dateUp = date(DATE_RFC2822, $r->updatedate);
+                    $message['id'] = $r->id;
+                    $message['category'] = $r->category;
+                    $message['subject'] = $r->subject;
+                    $message['message'] = $r->message;
+                    $message['status'] = $r->status;
+                    $message['readflag'] = $r->readflag;
+                    $message['submitdate'] = $dateSub;
+                    $message['updatedate'] = $dateUp;
+                    $message['firstname'] = $r->firstname;
+                    $message['lastname'] = $r->lastname;
+                }
                 array_push($messages, $message);
+                // Need to unset the array as not always the same values being set.
+                // If you don't unset then the next record keeps the last value.
+                unset($message);
             }
+
         }
 
         // Set the value for various items sent to the template.
