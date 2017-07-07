@@ -67,6 +67,7 @@ $capabilities = array(
         'contextlevel' => CONTEXT_SYSTEM,
         'legacy' => array(
             'guest' => CAP_PROHIBIT,
+            'user' => CAP_ALLOW,
             'student' => CAP_ALLOW,
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,

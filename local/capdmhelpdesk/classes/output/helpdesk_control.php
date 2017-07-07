@@ -70,7 +70,8 @@ class helpdesk_control implements renderable, templatable {
 
         // Get the list of helpdesk requests for the supplied userid.
         //$records = $DB->get_records_sql('select * from {capdmhelpdesk_requests} where userid = :userid order by submitdate desc', array('userid' => $userid));
-        $records = $DB->get_records_sql('select r.id, r.userid, r.category, r.subject, cat.cat_name, r.message, r.submitdate, case r.updatedate when 0 then \'NA\' else r.updatedate end as updatedate, r.updateby, r.status, r.readflag,
+        $records = $DB->get_records_sql('select r.id, r.userid, r.category, r.subject, cat.cat_name, r.message, r.submitdate, case r.updatedate when 0 then \'NA\' else r.updatedate end
+                                        as updatedate, r.updateby, r.status, case r.readflag when 0 then \'unread\' else \'read\' end as readflag,
                                         u.firstname, u.lastname
                                         from {capdmhelpdesk_requests} r
                                         inner join (
@@ -82,10 +83,13 @@ class helpdesk_control implements renderable, templatable {
                                         left join {user} u on r.updateby = u.id
                                         where userid = :userid order by submitdate desc', array('userid'=>$USER->id));
 
-
         // Get some stats for the helpdesk for the supplied userid.
         $stats = $DB->get_records_sql('select 1 as id, userid, \'open\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where userid = :userid1 and status = 0 group by status union select 2 as id, userid,  \'closed\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where userid = :userid2 and status = 1 group by status union select 3 as id, userid, \'unread\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where userid = :userid3 and readflag = 0 group by readflag', array('userid1' => $userid, 'userid2' => $userid, 'userid3' => $userid));
 
+        $open = 0;
+        $closed = 0;
+        $unread = 0;
+        
         foreach($stats as $s){
             switch($s->status){
                 case 'open':

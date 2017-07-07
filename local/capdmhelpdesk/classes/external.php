@@ -224,10 +224,9 @@ class external extends external_api {
         $record->subject = $subject;
         $record->message = $message;
         $record->submitdate = time();
-        $record->updatedate = time();
         $record->updateby = $updateby;
         $record->status = 0;
-        $record->readflag = 0;
+        $record->readflag = 1;
         $record->params = $params;
 
         // Insert the record into the database table.
@@ -424,6 +423,7 @@ class external extends external_api {
         $record->id = $replyto;
         $record->status = 0;
         $record->lastupdated = time();
+        $record->readflag = 0;
         $record->updatedby = $USER->id;
 
         $ret = $DB->update_record('capdmhelpdesk_requests', $record);

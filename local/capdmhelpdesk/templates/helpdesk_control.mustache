@@ -71,7 +71,7 @@
                                 <p><span class="label">{{# str }}labelsubject, local_capdmhelpdesk{{/str}}</span>{{subject}}</p>
                                 <p><span class="label">{{# str }}labelsubmitdate, local_capdmhelpdesk{{/str}}</span>{{# str }} submitdate, local_capdmhelpdesk, { "datesubmitted": {{# quote }}{{submitdate}}{{/ quote }} }{{/str}}</p>
                             {{#updatedate}}
-                                <p class="updated"><span class="label">{{# str }}labelupdatedate, local_capdmhelpdesk{{/str}}</span>{{# str }} updatedate, local_capdmhelpdesk, { "dateupdated": {{# quote }}{{updatedate}}{{/ quote }}, "fullname": {{# quote }}{{firstname}} {{lastname}}{{/ quote }} }{{/str}}</p>
+                                <p class="updated {{readflag}}"><span class="label">{{# str }}labelupdatedate, local_capdmhelpdesk{{/str}}</span>{{# str }} updatedate, local_capdmhelpdesk, { "dateupdated": {{# quote }}{{updatedate}}{{/ quote }}, "fullname": {{# quote }}{{firstname}} {{lastname}}{{/ quote }} }{{/str}}</p>
                             {{/updatedate}}
                             {{^updatedate}}
                             {{/updatedate}}

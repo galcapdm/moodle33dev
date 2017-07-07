@@ -269,7 +269,8 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
 
             // First - reload the data for the page.
             var promises = ajax.call([
-                { methodname: 'local_capdmhelpdesk_get_replies', args:{ replyto: id } }
+                { methodname: 'local_capdmhelpdesk_get_replies', args:{ replyto: id } },
+                { methodname: 'local_capdmhelpdesk_update_message', args:{ msgid: id, field: 'readflag', val: 1 } }
             ]);
             promises[0].done(function(data) {
                 // We have the data - lets re-render the template with it.
@@ -279,6 +280,11 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
                     templates.runTemplateJS(js);
                 }).fail(notification.exception);
             }).fail(notification.exception);
+
+            promises[1].done(function(data) {
+                $( '#msgid_'+id+'_details' ).find('p.unread').removeClass('unread');
+            }).fail(notification.exception);
+
         } else {
             $( '#action_buttons_'+id ).hide(250);
             $( '#closeicon_'+id ).fadeOut(200);

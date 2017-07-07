@@ -30,6 +30,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 $string['capdmhelpdesk:addinstance'] = 'Add CAPDM Helpdesk';
+$string['capdmhelpdesk:admin'] = 'Is a CAPDMHELPDESK administator';
 $string['capdmhelpdesk:canuse'] = 'Can use the CAPDM Helpdesk local plugin';
 
 $string['modulename_help'] = 'Use the capdmhelpdesk local plugin to provide a method for registred site users to make general enquiries as well as requsts for help for a specific course.';
