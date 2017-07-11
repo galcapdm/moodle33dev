@@ -47,6 +47,7 @@ $string['modulenameplural'] = 'capdmhelpdesks';
 $string['capdmhelpdesksettings'] = 'capdmhelpdesk settings';
 $string['capdmhelpdeskintro'] = 'capdmhelpdesk Intro';
 $string['capdmhelpdeskname'] = 'Helpdesk';
+$string['capdmhelpdesknameadmin'] = 'Helpdesk - Admin view';
 $string['capdmhelpdesksetup'] = 'Configure CAPDM Helpdesk';
 
 // NEW STUFF
@@ -56,16 +57,21 @@ $string['subjecthelp'] = 'Enter a short subject line that best describes your is
 $string['message'] = 'Message';
 $string['messagehelp'] = 'Tell us as much as you can about the issue you are having as this will help us provide you the best advice.';
 $string['category'] = 'Category';
+$string['categorylabel'] = 'Category: ';
 $string['categoryhelp'] = 'Select a suitable category for this help request so that we can direct it to the relevant person.';
 $string['newmessage'] = 'New message';
 $string['mymessages'] = 'My messages';
-$string['nomessagesyet'] = 'Your do not have any helpdesk messages yet. When you do they will be listed here.';
+$string['nomessagesyet'] = 'You do not have any helpdesk messages yet. When you do they will be listed here.';
+$string['nomessagesyetadmin'] = 'Currently there are no open helpdesk messages in your categories that require your attention. When there are they will be listed here.';
 $string['addnewmessagehere'] = 'New message';
 $string['submitdate'] = '{$a->datesubmitted}';
 $string['updatedate'] = '{$a->dateupdated} by {$a->fullname}';
 $string['togglenewform'] = 'Show/hide the new message form';
 $string['waiting'] = 'Loading&hellip;';
 $string['intro'] = 'Use this helpdesk to contact us about any problems you have with using our site. Click on the "plus" icon above to open the form to create a new message. When you submit the form someone will be in touch.
+
+Click on a message to see more details and any replies. Click again to close it.';
+$string['introadmin'] = 'You are viewing a list of open helpdesk messages for the categories you are responsible for. These are listed in date order based on the original submission date.
 
 Click on a message to see more details and any replies. Click again to close it.';
 $string['replyby'] = '{$a->replier} replied on {$a->replytime}';
@@ -75,8 +81,20 @@ $string['labelorigmessage'] = 'Original message: ';
 $string['labelsubmitdate'] = 'Submit date: ';
 $string['labelupdatedate'] = 'Updated: ';
 $string['labelsubject'] = 'Subject: ';
+$string['labelreplies'] = 'Replies: ';
 $string['msgid'] = 'Message ID:';
 $string['btnshowall'] = 'Show all';
+$string['helpdesk_new_subject_admin'] = 'A new helpdesk message has been submitted for you at {$a->site}';
+$string['days'] = 'day(s)';
+$string['hrs'] = 'hrs';
+$string['mins'] = 'min';
+$string['msgage'] = 'Message age: ';
+$string['hrallmessage'] = 'Show all';
+$string['hr1message'] = '< 1 hr';
+$string['hr6message'] = '> 1 and < 6 hrs';
+$string['hr12message'] = '> 6 and < 12 hrs';
+$string['hr24message'] = '> 24 and < 48hrs';
+$string['hr48message'] = '> 48 hrs';
 $string['btnshowopen'] = 'Show open only ({$a->open})';
 $string['btnshowopentitle'] = 'There are {$a->open} open meassages in your helpdesk list. Click here to view just these messages';
 $string['btnshowclosed'] = 'Show closed only ({$a->closed})';
@@ -117,20 +135,14 @@ Regards
 
 {$a->site}';
 
+$string['helpdesk_reply_message_user'] = 'Dear {$a->fname}
 
+A rely has been added to your helpdesk reqeust. Please log in at {$a->site} to view this message.
 
-$string['helpdesk_new_subject_admin'] = 'A new helpdesk message has been submitted for you at {$a->site}';
+Regards
 
-
-
-
-
-
-
-
-
-
-
+{$a->site}';
+$string['helpdesk_reply_subject_user'] = 'A reply has been posted to your helpdesk message at {$a->site}';
 
 
 

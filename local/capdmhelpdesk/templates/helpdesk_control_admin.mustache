@@ -17,7 +17,7 @@
 {{!
     @template local_capdmhelpdesk/helpdesk_control
 
-    Example layout of the CAPDM Helpdesk plugin.
+    Example layout of the CAPDM Helpdesk plugin admin view.
 
     Example context (json):{}
 }}
@@ -28,13 +28,13 @@
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 
             <div id="capdmhelpdesk-header-holder">
-                <h1>{{#str}}capdmhelpdeskname, local_capdmhelpdesk{{/str}}
+                <h1>{{#str}}capdmhelpdesknameadmin, local_capdmhelpdesk{{/str}}
                 <span id="add_new_message" class="fa-stack fa-lg">
                     <i class="fa fa-circle fa-stack-2x"></i>
                     <i id="add_new_message_indicator" class="fa fa-plus fa-stack-1x" title="{{# str }}togglenewform, local_capdmhelpdesk{{/str}}"></i>
                 </span>
                 </h1>
-                <p>{{# str}}intro, local_capdmhelpdesk{{/str}}</p>
+                <p>{{# str}}introadmin, local_capdmhelpdesk{{/str}}</p>
 
                 <div id="capdmhelpdesk-feedback" class="alert alert-info" style="display: none;">
                 <p></p>
@@ -42,16 +42,21 @@
             </div>
 
             <div id="capdmhelpdesk-control-buttons">
-                <button id="test">TEST</button>
                 <button id="reload" class="btn btn-default helpdesk-control-button" title="{{# str }}reload, local_capdmhelpdesk{{/str}}"><i class="fa fa-repeat"></i></button>
-                <button id="show_all" class="btn btn-default helpdesk-control-button" title="{{# str }}btnshowall, local_capdmhelpdesk{{/str}}">{{# str }}btnshowall, local_capdmhelpdesk{{/str}}</button>
-                <button id="show_open" class="btn btn-default helpdesk-control-button" title="{{# str }} btnshowopentitle, local_capdmhelpdesk, { "open": {{# quote }}{{open}}{{/ quote }} }{{/str}}">{{# str }}btnshowopen, local_capdmhelpdesk, { "open": {{# quote }}{{open}}{{/ quote }} }{{/str}}</button>
-                <button id="show_closed" class="btn btn-default helpdesk-control-button" title="{{# str }} btnshowclosedtitle, local_capdmhelpdesk, { "totalclosed": {{# quote }}{{closed}}{{/ quote }} }{{/str}}">{{# str }}btnshowclosed, local_capdmhelpdesk, { "closed": {{# quote }}{{closed}}{{/ quote }} }{{/str}}</button>
+            </div>
+
+            <div id="key">
+                <button id="show_age_0" class="btn btn-default agestatus_0 helpdesk-control-button"">{{# str}}hrallmessage, local_capdmhelpdesk{{/str}}</button>
+                <button id="show_age_1" class="btn btn-default agestatus_1 helpdesk-control-button"">{{# str}}hr1message, local_capdmhelpdesk{{/str}}</button>
+                <button id="show_age_6" class="btn btn-default agestatus_6 helpdesk-control-button"">{{# str}}hr6message, local_capdmhelpdesk{{/str}}</button>
+                <button id="show_age_12" class="btn btn-default agestatus_12 helpdesk-control-button"">{{# str}}hr12message, local_capdmhelpdesk{{/str}}</button>
+                <button id="show_age_24" class="btn btn-default agestatus_24 helpdesk-control-button"">{{# str}}hr24message, local_capdmhelpdesk{{/str}}</button>
+                <button id="show_age_48" class="btn btn-default agestatus_48 helpdesk-control-button"">{{# str}}hr48message, local_capdmhelpdesk{{/str}}</button>
             </div>
             <!-- Message list holder -->
-            <div data-region="capdmhelpdesk-msg-list" id="capdmhelpdesk-msg-list" class="helpdesk-holder">
+            <div data-region="capdmhelpdesk-msg-list-admin" id="capdmhelpdesk-msg-list-admin" class="helpdesk-holder">
                 {{^messages}}
-                    <h2 class="light-text">{{# str }}nomessagesyet, local_capdmhelpdesk{{/str}}</h2>
+                    <h2 class="light-text">{{# str }}nomessagesyetadmin, local_capdmhelpdesk{{/str}}</h2>
                 {{/messages}}
                 {{#messages}}
                     <div id="action_buttons_{{id}}" class="capdmhelpdesk-action-buttons" style="display: none">
@@ -63,12 +68,15 @@
                             <button id="action_close_{{id}}" class="btn btn-default btn-sm capdmhelpdesk-action-button" title="{{# str }}closemessagebuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}closemessagebutton, local_capdmhelpdesk{{/str}}</button>
                         {{/status}}
                     </div>
-                    <div id="msgid_{{id}}" class="messageholder-main holder_status_{{status}}" title="{{# str }}clicktoview, local_capdmhelpdesk{{/str}}">
-                        <div class="status status_{{status}}">
+                    <div id="msgid_{{id}}" class="messageholder-main holder_age_{{agestatus}}" title="{{# str }}clicktoview, local_capdmhelpdesk{{/str}}">
+                        <div class="status agestatus_{{agestatus}}">
                             <i id="closeicon_{{id}}" class="fa fa-close closeicon_{{status}}" style="display: none;"></i>
                             <div id="msgid_{{id}}_details" class="messagedetails">
+                                <p><span class="label">{{# str }}msgage, local_capdmhelpdesk{{/str}}</span>{{age}}</span></p>
+                                <p><span class="label">{{# str }}categorylabel, local_capdmhelpdesk{{/str}}</span>{{category}}</span></p>
                                 <p><span class="label">{{# str }}msgid, local_capdmhelpdesk{{/str}}</span>{{id}}</p>
                                 <p><span class="label">{{# str }}labelsubject, local_capdmhelpdesk{{/str}}</span>{{subject}}</p>
+                                <p><span class="label">{{# str }}labelreplies, local_capdmhelpdesk{{/str}}</span>{{replies}}</p>
                                 <p><span class="label">{{# str }}labelsubmitdate, local_capdmhelpdesk{{/str}}</span>{{# str }} submitdate, local_capdmhelpdesk, { "datesubmitted": {{# quote }}{{submitdate}}{{/ quote }} }{{/str}}</p>
                             {{#updatedate}}
                                 <p class="updated {{readflag}}"><span class="label">{{# str }}labelupdatedate, local_capdmhelpdesk{{/str}}</span>{{# str }} updatedate, local_capdmhelpdesk, { "dateupdated": {{# quote }}{{updatedate}}{{/ quote }}, "fullname": {{# quote }}{{firstname}} {{lastname}}{{/ quote }} }{{/str}}</p>
@@ -88,8 +96,8 @@
                         <textarea id="reply" name="reply" class="form-control" rows="6" placeholder="Enter your reply here..." type="text"></textarea>
                         <input id="replyto" name="replyto" type="hidden" value="{{id}}">
                         <input id="replierid" name="replierid" type="hidden" value="{{userid}}">
-                        <input id="notify" name="notify" type="hidden" value="admin">
                         <input id="owner" name="owner" type="hidden" value="{{userid}}">
+                        <input id="notify" name="notify" type="hidden" value="student">
                         <button class="btn btn-primary" title="{{#str}}replyformbuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}replyformbutton, local_capdmhelpdesk{{/str}}</button>
                     </form>
                 </div>
@@ -97,53 +105,6 @@
                     <div class="waiting"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i><span class="sr-only">{{# str}}loadingreplies, local_capdmhelpdesk{{/str}}</span></div>
                 </div>
                 {{/messages}}
-            </div>
-            <!-- New message holder -->
-            <div id="capdmhelpdesk-new-msg-holder" class="helpdesk-holder">
-                <div id="new_message_waiting" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 waitingmessage" style="display: none;">
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <p><i class="fa fa-spinner fa-pulse fa-4x fa-fw"></i></p>
-                            <h3>{{# str}}sendingnewmessage, local_capdmhelpdesk{{/str}}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div id="new_message_form" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <form id="form_new_message" class="form_validate" action="#" method="post">
-                            <div>
-                                <p>{{#str}}addnewmessagehere, local_capdmhelpdesk{{/str}}</p>
-                            </div>
-                            <div>
-                                <label for"subject">{{#str}}subject, local_capdmhelpdesk{{/str}}</label>
-                                <input id="subject" name="subject" class="form-control" placeholder="Enter a short title here" type="text">
-                            </div>
-
-                            <div>
-                                <label for"message">{{#str}}message, local_capdmhelpdesk{{/str}}</label>
-                                <textarea id="message" name="message" class="form-control" placeholder="Enter your message here" type="textbox" rows="6"></textarea>
-                            </div>
-
-                            <div>
-
-                                <label for"category">{{#str}}category, local_capdmhelpdesk{{/str}}</label>
-                                <select id="category" name="category" class="form-control">
-                                    <option value=""></option>
-                                {{#cats}}
-                                    <option value="{{id}}">{{value}}</option>
-                                {{/cats}}
-                                </select>
-                            </div>
-
-                            <div>
-                                <input id="userid" name="userid" type="hidden" value="{{userid}}">
-                                <button id="new_message_submit" class="btn btn-primary">{{#str}}submit{{/str}}</button>
-                            </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

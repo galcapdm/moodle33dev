@@ -30,10 +30,10 @@
         <div id="action_buttons_{{id}}" class="capdmhelpdesk-action-buttons" style="display: none">
             <button id="action_reply_{{id}}" class="btn btn-default btn-sm capdmhelpdesk-action-button" title="{{# str }}replymessagebuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}replymessagebutton, local_capdmhelpdesk{{/str}}</button>
             {{#status}}
-                <span class="alreadyclosed">{{# str }}alreadyclosed, local_capdmhelpdesk{{/str}}</span>
+                <button id="action_close_{{id}}" class="btn btn-default btn-sm capdmhelpdesk-action-button" title="{{# str }}closemessagebuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}closemessagebutton, local_capdmhelpdesk{{/str}}</button>
             {{/status}}
             {{^status}}
-                <button id="action_close_{{id}}" class="btn btn-default btn-sm capdmhelpdesk-action-button" title="{{# str }}closemessagebuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}closemessagebutton, local_capdmhelpdesk{{/str}}</button>
+                <span class="alreadyclosed">{{# str }}alreadyclosed, local_capdmhelpdesk{{/str}}</span>
             {{/status}}
         </div>
         <div id="msgid_{{id}}" class="messageholder-main holder_status_{{status}}" title="{{# str }}clicktoview, local_capdmhelpdesk{{/str}}">

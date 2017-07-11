@@ -312,13 +312,19 @@ div.reply-holder {
 }
 
 div#capdmhelpdesk-msg-list span.label,
-div#capdmhelpdesk-msg-list p.label {
+div#capdmhelpdesk-msg-list p.label,
+div#capdmhelpdesk-msg-list-admin span.label,
+div#capdmhelpdesk-msg-list-admin p.label {
     background-color: transparent;
     color: inherit;
 }
 
 div#origmessage {
     margin: 0 1em 1em 1em;
+    padding: 5px 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background-color: #f7f7f7;
 }
 
 i.closeicon_0 {
@@ -375,9 +381,57 @@ span.alreadyclosed, p.unread {
 div#capdmhelpdesk-new-msg-holder div.waitingmessage * {
     text-align: center;
 }
+
 .unread:before {
     font-family: FontAwesome;
     content: "\f003";
     margin-right: 1em;
     color: inherit;
+}
+
+div#key {
+    float: left;
+    width: 100%;
+}
+
+div#key button.agestatus_0,
+div#key button.agestatus_1,
+div#key button.agestatus_6,
+div#key button.agestatus_12,
+div#key button.agestatus_24,
+div#key button.agestatus_48 {
+    float: left;
+    margin: 0 1em 1em 0;
+    padding: 5px 10px;
+}
+
+div#key button.agestatus_6,
+div#key button.agestatus_24,
+div#key button.agestatus_48 {
+
+    color: #fff;
+}
+
+.agestatus_0 {
+    background-color: inherit;
+}
+
+.agestatus_1 {
+    background-color: lightgreen;
+}
+
+.agestatus_6 {
+    background-color: darkgreen;
+}
+
+.agestatus_12 {
+    background-color: yellow;
+}
+
+.agestatus_24 {
+    background-color: orangered;
+}
+
+.agestatus_48 {
+    background-color: darkred;
 }

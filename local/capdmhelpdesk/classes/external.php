@@ -36,6 +36,8 @@ use external_multiple_structure;
 use invalid_parameter_exception;
 use external_warnings;
 use stdClass;
+use context_system;
+use core_user;
 
 /**
  * This is the external API for this plugin.
@@ -83,7 +85,7 @@ class external extends external_api {
     public static function get_replies($replyto = 0) {
         global $DB, $PAGE;
 
-        $PAGE->set_context();
+        $PAGE->set_context(context_system::instance());
 
         // Build an array for any warnings.
         $warnings = array();
@@ -99,11 +101,11 @@ class external extends external_api {
         $result = array();
         $result['replies'] = array();       // This is an array to hold the replies records.  An array of arrays!
         $result['replyto'] = $replyto;      // The original message ID.
-        $result['status'] = $status;        // The status of the current message i.e. open, closed.
-        $result['origmessage'] = $status;        // Text of the original message.
+//        $result['status'] = $status;        // The status of the current message i.e. open, closed.
+//        $result['origmessage'] = $status;        // Text of the original message.
         $result['warnings'] = $warnings;    // Any warnings issued.
 
-        $replies = $DB->get_records_sql('select r.id, replyto, r.message, req.message as origmessage, from_unixtime(r.submitdate, \'%D %M %Y %H:%i\') as submitdate, username, case when username is null then \'You\' else concat(firstname, \' \', lastname) end as fullname, case replierid when 0 then \'You\' else \'other\' end as \'originator\', status from {capdmhelpdesk_replies} r left join {user} u on r.replierid = u.id inner join {capdmhelpdesk_requests} req on r.replyto = req.id where replyto = :replyto order by submitdate desc', array('replyto'=>$replyto));
+        $replies = $DB->get_records_sql('select r.id, replyto, r.message, req.message as origmessage, from_unixtime(r.submitdate, \'%D %M %Y %H:%i\') as submitdate, username, case when username is null then \'You\' else concat(firstname, \' \', lastname) end as fullname, case replierid when req.userid then \'You\' else \'other\' end as \'originator\', status from {capdmhelpdesk_replies} r left join {user} u on r.replierid = u.id inner join {capdmhelpdesk_requests} req on r.replyto = req.id where replyto = :replyto order by submitdate desc', array('replyto'=>$replyto));
 
         foreach ($replies as $r) {
             $result['replies'][] = array(
@@ -196,7 +198,7 @@ class external extends external_api {
         global $DB, $PAGE;
 
         // Need this for email notifications to work!
-        $PAGE->set_context();
+        $PAGE->set_context(context_system::instance());
 
         // Build an array for any warnings.
         $warnings = array();
@@ -375,7 +377,9 @@ class external extends external_api {
             array(
                 'replyto' => new external_value(PARAM_INT, 'The ID of the message this reply relates to.'),
                 'message' => new external_value(PARAM_TEXT, 'Text of the reply message.'),
-                'replierid' => new external_value(PARAM_TEXT, 'Moodle ID of who replied.'),
+                'replierid' => new external_value(PARAM_INT, 'Moodle ID of who replied.'),
+                'notify' => new external_value(PARAM_TEXT, 'Indicator of who to notify of this reply.'),
+                'owner' => new external_value(PARAM_INT, 'Indicator of who to notify of this reply.'),
             )
         );
     }
@@ -391,8 +395,10 @@ class external extends external_api {
      * @since   Moodle 3.1
      * @throws  moodle_exception
      */
-    public static function save_reply($replyto, $message, $replierid) {
-        global $DB, $USER;
+    public static function save_reply($replyto, $message, $replierid, $notify = 'NA', $owner) {
+        global $DB, $USER, $PAGE;
+
+        $PAGE->set_context(context_system::instance());
 
         // Build an array for any warnings.
         $warnings = array();
@@ -403,12 +409,13 @@ class external extends external_api {
             'replyto' => $replyto,
             'message' => $message,
             'replierid' => $replierid,
+            'notify' => $notify,
+            'owner' => $owner,
         );
         $params = self::validate_parameters(self::save_reply_parameters(), $params);
 
 
-        // This should be an object but using new stdClass() here causes an error.
-        // So...built as an array and then cast as an object when submitting to the DB.
+        // An object when submitting to the DB.
         $record = new stdClass();
         $record->replyto = $replyto;
         $record->message = $message;
@@ -420,13 +427,41 @@ class external extends external_api {
 
         // Now update the parent record.
         unset($record);
+
+        $record = new stdClass();
         $record->id = $replyto;
         $record->status = 0;
-        $record->lastupdated = time();
+        $record->updatedate = time();
         $record->readflag = 0;
-        $record->updatedby = $USER->id;
+        $record->updateby = $replierid;
 
         $ret = $DB->update_record('capdmhelpdesk_requests', $record);
+
+        // If successfully saved then send notify email to the relevant person.
+        // If the reply has come from the student then notify the admins/tutors.
+        // If the reply has come the admin/tutors then notify the student.
+        if($ret){
+            // Need to look up the user details of who posted the message.
+            switch ($notify){
+                case 'student':
+                    $user = $DB->get_record('user', array('id'=>$owner));
+                    $msg = 'reply';
+                    break;
+                case 'admin':
+                    $user = $DB->get_record('user', array('id'=>2));
+                    $msg = 'reply';
+                    break;
+                default:
+                    // Send a message to the site support user (fallback is the site admin) as there is a problem then need to know about.
+                    $user = core_user::get_support_user();
+                    $msg = 'error_001';
+                    break;
+            }
+            // Add some additional parameters to the $user object to use later.
+            //$user->notify = $notify;
+            $ret = capdmhelpdesk_send_notification($user, $msg);
+        }
+
 
         // Build an array to hold the itmes to be returned to the template.
         $result = array();

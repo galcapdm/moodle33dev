@@ -48,6 +48,18 @@ class renderer extends plugin_renderer_base {
      *
      * @return string html for the page
      */
+    public function render_helpdesk_control_admin($page) {
+        $data = $page->export_for_template($this);
+        return parent::render_from_template('local_capdmhelpdesk/helpdesk_control_admin', $data);
+    }
+
+    /**
+     * Defer to template.
+     *
+     * @param header $page
+     *
+     * @return string html for the page
+     */
     public function render_helpdesk_nopermission($page) {
         $data = $page->export_for_template($this);
         return parent::render_from_template('local_capdmhelpdesk/helpdesk_nopermission', $data);

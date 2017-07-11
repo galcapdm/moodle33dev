@@ -163,9 +163,11 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
                     var replyMsg = $('#form_reply_message #reply').val();
                     var replyTo = $('#form_reply_message #replyto').val();
                     var replierId = $('#form_reply_message #replierid').val();
+                    var notify = $('#form_reply_message #notify').val();
+                    var owner = $('#form_reply_message #owner').val();
 
                     var promises = ajax.call([
-                        { methodname: 'local_capdmhelpdesk_save_reply', args:{ replyto: replyTo, message: replyMsg, replierid: replierId} },
+                        { methodname: 'local_capdmhelpdesk_save_reply', args:{ replyto: replyTo, message: replyMsg, replierid: replierId, notify: notify, owner: owner} },
                         { methodname: 'local_capdmhelpdesk_get_replies', args:{ replyto: replyTo } }
                     ]);
                     promises[0].done(function(data) {
@@ -335,6 +337,52 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
             case 'closed':
                 $( '.holder_status_0' ).hide(500);
                 $( '.holder_status_1' ).show(500);
+                break;
+            case 'age':
+                switch(btnid.split( '_' )[2]){
+                    case '0':
+                        $( '.holder_age_1' ).show(300);
+                        $( '.holder_age_6' ).show(300);
+                        $( '.holder_age_12' ).show(300);
+                        $( '.holder_age_24' ).show(300);
+                        $( '.holder_age_48' ).show(300);
+                        break;
+                    case '1':
+                        $( '.holder_age_1' ).show(300);
+                        $( '.holder_age_6' ).hide(300);
+                        $( '.holder_age_12' ).hide(300);
+                        $( '.holder_age_24' ).hide(300);
+                        $( '.holder_age_48' ).hide(300);
+                        break;
+                    case '6':
+                        $( '.holder_age_1' ).hide(300);
+                        $( '.holder_age_6' ).show(300);
+                        $( '.holder_age_12' ).hide(300);
+                        $( '.holder_age_24' ).hide(300);
+                        $( '.holder_age_48' ).hide(300);
+                        break;
+                    case '12':
+                        $( '.holder_age_1' ).hide(300);
+                        $( '.holder_age_6' ).hide(300);
+                        $( '.holder_age_12' ).show(300);
+                        $( '.holder_age_24' ).hide(300);
+                        $( '.holder_age_48' ).hide(300);
+                        break;
+                    case '24':
+                        $( '.holder_age_1' ).hide(300);
+                        $( '.holder_age_6' ).hide(300);
+                        $( '.holder_age_12' ).hide(300);
+                        $( '.holder_age_24' ).show(300);
+                        $( '.holder_age_48' ).hide(300);
+                        break;
+                    case '48':
+                        $( '.holder_age_1' ).hide(300);
+                        $( '.holder_age_6' ).hide(300);
+                        $( '.holder_age_12' ).hide(300);
+                        $( '.holder_age_24' ).hide(300);
+                        $( '.holder_age_48' ).show(300);
+                        break;
+                }
                 break;
         }
 

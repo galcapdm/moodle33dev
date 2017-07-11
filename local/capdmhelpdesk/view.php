@@ -49,18 +49,26 @@ echo $output->header();
 // All helpdesk activities take place in the system context.
 $context = context_system::instance();
 
-if(has_capability('local/capdmhelpdesk:canuse', $context)){
+if(has_capability('local/capdmhelpdesk:admin', $context)){
+        $helpdeskcontroladmin = new \local_capdmhelpdesk\output\helpdesk_control_admin();
+        echo $output->render($helpdeskcontroladmin);
 
-    $helpdeskcontrol = new \local_capdmhelpdesk\output\helpdesk_control();
-    echo $output->render($helpdeskcontrol);
-
-    $params = [];
-    $PAGE->requires->js_call_amd('local_capdmhelpdesk/capdmhelpdesk', 'init', $params);
+        $params = [];
+        $PAGE->requires->js_call_amd('local_capdmhelpdesk/capdmhelpdesk', 'init', $params);
 } else {
-    $nopermission = new \local_capdmhelpdesk\output\helpdesk_nopermission();
-    echo $output->render($nopermission);
+    if(has_capability('local/capdmhelpdesk:canuse', $context)){
+
+        $helpdeskcontrol = new \local_capdmhelpdesk\output\helpdesk_control();
+        echo $output->render($helpdeskcontrol);
+
+        $params = [];
+        $PAGE->requires->js_call_amd('local_capdmhelpdesk/capdmhelpdesk', 'init', $params);
+    } else {
+        $nopermission = new \local_capdmhelpdesk\output\helpdesk_nopermission();
+        echo $output->render($nopermission);
+    }
 }
 
-//echo(capdmhelpdesk_send_notification($USER, 1));
+//echo(capdmhelpdesk_send_notification($USER, 'new'));
 
 echo $output->footer();
