@@ -69,7 +69,7 @@ defined('MOODLE_INTERNAL') || die();
                         $msg = get_string('helpdesk_new_message_thanks','local_capdmhelpdesk', array('fname'=>$objRecipient->firstname, 'site'=>$SITE->fullname));
                         // Set admins message.
                         $subject_admins = get_string('helpdesk_new_subject_admin','local_capdmhelpdesk', array('site'=>$SITE->fullname));
-                        $msg_admins = get_string('helpdesk_new_message_admin','local_capdmhelpdesk', array('fname'=>$objRecipient->firstname, 'site'=>$SITE->fullname));
+                        $msg_admins = get_string('helpdesk_new_message_admin','local_capdmhelpdesk', array('sender'=>$objRecipient->firstname.' '.$objRecipient->lastname, 'site'=>$SITE->fullname, 'subject'=>$objRecipient->subject));
                         // As this is a new message presumably from a student then need to notify admins also.
                         $notify_admins = true;
                         break;
@@ -87,14 +87,12 @@ defined('MOODLE_INTERNAL') || die();
                 // Hack for now.
                 $admins = $sender;
 
-                email_to_user($sender, $sender, 'subject', 'body');
-
 		// Send an acknowledgement to the user.
-		email_to_user($objRecipient, $sender, $subject, $msg);
+		email_to_user($objRecipient, $sender, $subject.$objRecipient->subject, $msg);
 
                 // If need to notify admins then do it to all.
                 if($notify_admins){
-                    //email_to_user($admins, $sender, $subject_admins, $msg_admins);
+                    email_to_user($admins, $sender, $subject_admins, $msg_admins);
                 }
 
 		return true;

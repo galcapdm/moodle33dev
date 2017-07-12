@@ -79,6 +79,10 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
 
                             $( '#msgid_'+data.newmsgid+' div.status').toggleClass('latestmsg');
 
+                            // Show the form and hide the information message now the message has been sent.
+                            // Else the wating message remains and the form is not available if the student wants to send another message.
+                            toggleNewForm(1);
+
                             $( '#capdmhelpdesk-new-msg-holder' ).animate({
                                 left: hidepos
                             }, 750, function(){

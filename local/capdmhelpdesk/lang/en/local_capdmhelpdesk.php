@@ -124,12 +124,12 @@ Regards
 {$a->site}';
 $string['helpdesk_new_subject_user'] = 'Confirmation of your Helpdesk request at {$a->site}';
 
-$string['helpdesk_new_message_admin'] = 'Dear {$a->fname}
+$string['helpdesk_new_message_admin'] = 'Dear Admin/Tutor,
 
 A new helpdesk message at {$a->site} has been received and requires your attention.  Please log in and check.
 
-Message from : this needs completed
-Subject : this needs completed also
+Message from : {$a->sender}
+Subject : {$a->subject}
 
 Regards
 

@@ -238,6 +238,8 @@ class external extends external_api {
         if($ret){
             // Need to look up the user details of who posted the message.
             $user = $DB->get_record('user', array('id'=>$userid));
+            // Add extra parameters to the $user object to pass into the email process.
+            $user->subject = $subject;
             $ret = capdmhelpdesk_send_notification($user, 'new');
         }
 

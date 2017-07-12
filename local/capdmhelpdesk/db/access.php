@@ -63,7 +63,7 @@ $capabilities = array(
         )
     ),
     'local/capdmhelpdesk:canuse' => array(
-        'captype' => 'read',
+        'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'legacy' => array(
             'guest' => CAP_PROHIBIT,
