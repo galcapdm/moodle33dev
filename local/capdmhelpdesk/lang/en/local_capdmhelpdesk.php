@@ -102,6 +102,7 @@ $string['btnshowclosedtitle'] = 'There are {$a->totalclosed} closed meassages in
 $string['nopermisson'] = 'Sorry, but you do not have permission to use this service. Please check with your system administrator for further assistance.';
 $string['reload'] = 'Reload messages';
 $string['clicktoview'] = 'Click here to view this message and any replies. Click again to close.';
+$string['openreplybox'] = 'Click here to show/hide the reply form.';
 $string['reloading'] = 'Reloading messages&hellip;please wait.';
 $string['closemessagebutton'] = 'Update message status to "CLOSED"';
 $string['closemessagebuttontitle'] = 'Click here to mark this message closed.';
@@ -128,8 +129,9 @@ $string['helpdesk_new_message_admin'] = 'Dear Admin/Tutor,
 
 A new helpdesk message at {$a->site} has been received and requires your attention.  Please log in and check.
 
+Message ID: {$a->newmsgid}
 Message from : {$a->sender}
-Subject : {$a->subject}
+Subject : "{$a->subject}"
 
 Regards
 
@@ -137,13 +139,25 @@ Regards
 
 $string['helpdesk_reply_message_user'] = 'Dear {$a->fname}
 
-A rely has been added to your helpdesk reqeust. Please log in at {$a->site} to view this message.
+There has been an update to your helpdesk message "{$a->subject}". Please log in at {$a->site} to view this message.
 
 Regards
 
 {$a->site}';
 $string['helpdesk_reply_subject_user'] = 'A reply has been posted to your helpdesk message at {$a->site}';
+$string['helpdesk_reply_message_admin'] = 'Dear Admin/tutor
 
+There has been an update to a helpdesk message you are responsible for managing:-
+
+Message ID: {$a->msgid}
+Message subject: "{$a->subject}"
+
+Please log in at "{$a->site}" to view this message in your Helpdesk.
+
+Regards
+
+{$a->site}';
+$string['helpdesk_reply_subject_admin'] = 'A reply has been posted to a helpdesk message you manage at {$a->site}';
 
 
 

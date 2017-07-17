@@ -160,11 +160,15 @@ input#category + span.form-control-feedback.fa-times {
 
 div.messageholder-main,
 div.messageholder-replies {
-    border-top: 1px solid rgba(0, 0, 0, 0.2);
     padding: 0;
     width: 100%;
     float: left;
-    border-left: 1px solid rgba(0, 0, 0, 0.8);
+    border-left: 1px solid rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+div.messageholder-main div p {
+    color: #000;
 }
 
 div.messageholder-main:last-of-type {
@@ -325,17 +329,32 @@ div#origmessage {
     border-radius: 10px;
     border: 1px solid #ddd;
     background-color: #f7f7f7;
+    color: #000;
 }
 
-i.closeicon_0 {
+.message-icons {
+    float: left;
+}
+
+i.closeicon_0, i.closestatusicon_0, i.replyicon_0 {
     float: left;
     margin: 15px 0 0 13px;
     color: #fff;
     font-size: 24px;
+    clear: both;
 }
 
-i.closeicon_1 {
+div.status_1 i.closeicon_0, div.status_1 i.closestatusicon_0, div.status_1 i.replyicon_0 {
+    color: #666;
+}
+
+i.closeicon_0, i.closeicon_1 {
+    margin-bottom: 3em;
+}
+
+i.closeicon_1, i.closestatusicon_1, i.replyicon_1 {
     float: left;
+    clear: both;
     margin: 15px 0 0 13px;
     color: #000;
     font-size: 24px;
@@ -357,11 +376,11 @@ p.noreplies {
     margin-bottom: 1em;
 }
 
-form#form_reply_message {
+form.form_reply_message {
     margin: 1em 1em 1em 50px;
 }
 
-form#form_reply_message button {
+form.form_reply_message button {
     margin-top: 1em;
 }
 
@@ -408,30 +427,69 @@ div#key button.agestatus_48 {
 div#key button.agestatus_6,
 div#key button.agestatus_24,
 div#key button.agestatus_48 {
-
-    color: #fff;
+    color: #fff !important;
 }
 
 .agestatus_0 {
     background-color: inherit;
+    color: #000 !important;
 }
 
 .agestatus_1 {
     background-color: lightgreen;
+    color: #000 !important;
+}
+
+.agestatus_1 .status_1 {
+    color: #666 !important;
 }
 
 .agestatus_6 {
     background-color: darkgreen;
+    color: #fff !important;
+}
+
+.agestatus_6 .status_1 {
+    color: #666 !important;
 }
 
 .agestatus_12 {
     background-color: yellow;
+    color: #000 !important;
+}
+
+.agestatus_12 .status_1 {
+    color: #666 !important;
 }
 
 .agestatus_24 {
     background-color: orangered;
+    color: #fff !important;
+}
+
+.agestatus_24 .status_1 {
+    color: #666 !important;
 }
 
 .agestatus_48 {
     background-color: darkred;
+    color: #fff !important;
+}
+
+.agestatus_48 .status_1 {
+    color: #666 !important;
+}
+
+.status-holders {
+    float: left;
+    width: 100%;
+    margin: -5px 0px 0.5em -4px;
+}
+
+.status-item {
+    float: left;
+    border-right: 1px solid #fff;
+    min-height: 50px;
+    padding: 5px;
+    color: #000;
 }

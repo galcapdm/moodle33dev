@@ -149,6 +149,7 @@ class helpdesk_control_admin implements renderable, templatable {
                 }
 
                 $message['id'] = $r->id;
+                $message['owner'] = $r->userid;
                 $message['category'] = $r->cat_name;
                 $message['subject'] = $r->subject;
                 $message['message'] = $r->message;

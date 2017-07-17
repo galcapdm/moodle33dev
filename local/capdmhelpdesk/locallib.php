@@ -40,28 +40,22 @@ defined('MOODLE_INTERNAL') || die();
 		global $DB, $USER, $CFG, $SITE;
 
 		$output = '';
+                $admins = array();
 
-		$enquirer = new stdClass();
-		$enquirer->email = $objRecipient->email;
-		$enquirer->firstname = $objRecipient->firstname;
-		$enquirer->lastname = $objRecipient->lastname;
-                $enquirer->username = 'admin from the code';
-		$enquirer->id = 2;	// junk value to get the email notification to work
 
+//                $enquirer = new stdClass();
+//                $enquirer->email = $objRecipient->email;
+//                $enquirer->firstname = $objRecipient->firstname;
+//                $enquirer->lastname = $objRecipient->lastname;
+//                $enquirer->username = 'admin from the code';
+//                $enquirer->id = 2;	// junk value to get the email notification to work
+
+                // Set the sender to the core_user::get_support_user.
                 $sender = core_user::get_support_user();
 
-		//$link = $CFG->wwwroot.'/local/capdmhelpdesk/view.php?menuid=1&thisaction=2&id='.$msgID;
-		//$body = get_string('newmessagebody','local_capdmhelpdesk', array('link'=>$link));
-		//$subject = get_string('newmessagesubject','local_capdmhelpdesk');
-
-                // now send and email to those uses listed in the admins config list
-//		foreach($allAdmins as $a){
-			//$thisAdmin = $DB->get_record('user', array('username'=>$a));
-			//email_to_user($thisAdmin, $admin, $subject, $body);
-		//}
-
-                // Set boolean for notifying admins to false by default.
+                // Set boolean for notifying admins to false and user to true by default.
                 $notify_admins = false;
+                $notify_user = true;
 
                 switch($msgID){
                     case 'new':
@@ -69,30 +63,42 @@ defined('MOODLE_INTERNAL') || die();
                         $msg = get_string('helpdesk_new_message_thanks','local_capdmhelpdesk', array('fname'=>$objRecipient->firstname, 'site'=>$SITE->fullname));
                         // Set admins message.
                         $subject_admins = get_string('helpdesk_new_subject_admin','local_capdmhelpdesk', array('site'=>$SITE->fullname));
-                        $msg_admins = get_string('helpdesk_new_message_admin','local_capdmhelpdesk', array('sender'=>$objRecipient->firstname.' '.$objRecipient->lastname, 'site'=>$SITE->fullname, 'subject'=>$objRecipient->subject));
+                        $msg_admins = get_string('helpdesk_new_message_admin','local_capdmhelpdesk', array('sender'=>$objRecipient->firstname.' '.$objRecipient->lastname, 'site'=>$SITE->fullname, 'subject'=>$objRecipient->subject, 'newmsgid'=>$objRecipient->newmsgid));
                         // As this is a new message presumably from a student then need to notify admins also.
                         $notify_admins = true;
                         break;
                     case 'reply':
                         $subject = get_string('helpdesk_reply_subject_user','local_capdmhelpdesk', array('site'=>$SITE->fullname));
-                        $msg = get_string('helpdesk_reply_message_user','local_capdmhelpdesk', array('fname'=>$objRecipient->firstname, 'site'=>$SITE->fullname));
-                        // Check to see who should be notified about this reply.
-                        if($objRecipient->notify == 'admin' ){
-                            // Need to notify admins also.
-                            $notify_admins = true;
-                        }
+                        $msg = get_string('helpdesk_reply_message_user','local_capdmhelpdesk', array('fname'=>$objRecipient->firstname, 'site'=>$SITE->fullname, 'subject'=>$objRecipient->subject));
+                        break;
+                    case 'replyadmin':
+                        $subject_admins = get_string('helpdesk_reply_subject_admin','local_capdmhelpdesk', array('site'=>$SITE->fullname));
+                        $msg_admins = get_string('helpdesk_reply_message_admin','local_capdmhelpdesk', array('site'=>$SITE->fullname, 'subject'=>$objRecipient->subject, 'msgid'=>$objRecipient->msgid));
+                        // Need to notify admins also.
+                        $notify_admins = true;
+                        $notify_user = false;
                         break;
                 }
 
-                // Hack for now.
-                $admins = $sender;
-
-		// Send an acknowledgement to the user.
-		email_to_user($objRecipient, $sender, $subject.$objRecipient->subject, $msg);
+		// Send an acknowledgement/notification messages.
+                // If need to notify the original user then send a message.
+                if($notify_user){
+                    email_to_user($objRecipient, $sender, $subject, $msg);
+                }
 
                 // If need to notify admins then do it to all.
                 if($notify_admins){
-                    email_to_user($admins, $sender, $subject_admins, $msg_admins);
+
+                    // Hack for now.
+                    // For notifying admins the original message ID is passed in to we can find out who needs to be notified.
+                    $origMsgId = $objRecipient->msgid;
+
+                    // Hack for now
+                    array_push($admins, get_admin());
+
+                    foreach($admins as $admin){
+                        email_to_user($admin, $sender, $subject_admins, $msg_admins);
+                    }
                 }
 
 		return true;

@@ -4,6 +4,8 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
 
     var hidepos = 0;
     var userID = $('#userid').val();
+    var userType = $('#usertype').val();
+    var msgID;
 
     $(document).ready(function()
     // ------------------------
@@ -61,7 +63,7 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
                     $( '#new_message_submit' ).attr('disabled', true);
 
                     // Hide the form and show an information message as sending emails can cause a delay
-                    toggleNewForm(0);
+                    toggleNewForm(0, 'new');
 
                     var newMsg = $('#message').val();
                     var newSub = $('#subject').val();
@@ -81,7 +83,7 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
 
                             // Show the form and hide the information message now the message has been sent.
                             // Else the wating message remains and the form is not available if the student wants to send another message.
-                            toggleNewForm(1);
+                            toggleNewForm(1, 'new');
 
                             $( '#capdmhelpdesk-new-msg-holder' ).animate({
                                 left: hidepos
@@ -117,9 +119,7 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
         // Validate new message form - END.
 
         // Validate reply form - START.
-        $('#form_reply_message').each(function () {
-
-            console.log('did reply form validation - start');
+        $('.form_reply_message').each(function () {
 
             $(this).validate({
                 rules: {
@@ -164,14 +164,18 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
                 },
                 submitHandler: function ( form ) {
 
-                    var replyMsg = $('#form_reply_message #reply').val();
-                    var replyTo = $('#form_reply_message #replyto').val();
-                    var replierId = $('#form_reply_message #replierid').val();
-                    var notify = $('#form_reply_message #notify').val();
-                    var owner = $('#form_reply_message #owner').val();
+                    // Hide the form and show an information message as sending emails can cause a delay
+                    toggleNewForm(0, 'reply');
+                    var frm = $( form ).attr('id');
+                    var replyMsg = $( '#'+frm+' #reply').val();
+                    var replyTo = $( '#'+frm+' #replyto').val();
+                    var replierId = $( '#'+frm+' #replierid').val();
+                    var notify = $( '#'+frm+' #notify').val();
+                    var owner = $( '#'+frm+' #owner').val();
+                    var subject = $( '#'+frm+' #subject').val();
 
                     var promises = ajax.call([
-                        { methodname: 'local_capdmhelpdesk_save_reply', args:{ replyto: replyTo, message: replyMsg, replierid: replierId, notify: notify, owner: owner} },
+                        { methodname: 'local_capdmhelpdesk_save_reply', args:{ replyto: replyTo, message: replyMsg, replierid: replierId, notify: notify, owner: owner, subject: subject} },
                         { methodname: 'local_capdmhelpdesk_get_replies', args:{ replyto: replyTo } }
                     ]);
                     promises[0].done(function(data) {
@@ -181,6 +185,9 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
 
                         // Empty the contents of the reply textarea.
                         $( '#reply' ).val('');
+
+                        // Reset the info message.
+                        toggleNewForm(1, 'reply');
 
                     }).fail(notification.exception);
 
@@ -241,37 +248,35 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
         $( this ).toggleClass( 'fa-rotate-45' );
     });
 
-
     /*
      *  Click handler to listen for a click on a message.
      *  This will use AJAX to call for the relies to this message ID
      *  and use a template to replace the contents.
      */
-    $( 'body' ).on( 'click', '.messageholder-main', function(e){
-        var msgid = $( this ).attr('id');
-        var id = msgid.split('_')[1];
+    $( 'body' ).on( 'click', '.messagedetails', function(e){
+        msgID = $( this ).attr('id');
+        var id = msgID.split('_')[1];
+        var thisParent = $( '#msgid_'+id );
 
         if(! $(this).hasClass('opened') ){
 
             // Show this message actions buttons
-            $( '#action_buttons_'+id ).show(250);
+//            $( '#action_buttons_'+id ).show(250);
 
-            $( this ).find('.messagedetails').animate({
+            $( this ).animate({
                 marginLeft: '+=30'
             }, 300, function(){
                 // Callback.
-                $( '#closeicon_'+id ).fadeIn(300);
+                thisParent.find('i').fadeIn(300);
             });
 
             // Hide all messageholder div's except this one
-            $( '.messageholder-main').not(this).hide(500);
+            $( '.messageholder-main').not( thisParent ).hide(500);
 
             // Show the replies section and the original message.
             $( '#msgid_'+id+'_replies').show(750);
             $( '#origmessage_'+id).show(750);
             $( this ).addClass('opened');
-
-            var msgid = $( '#msgid' ).val();
 
             // First - reload the data for the page.
             var promises = ajax.call([
@@ -292,11 +297,10 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
             }).fail(notification.exception);
 
         } else {
-            $( '#action_buttons_'+id ).hide(250);
-            $( '#closeicon_'+id ).fadeOut(200);
-            $( this ).find('.messagedetails').animate({
+            thisParent.find('i').fadeOut(300);
+            $( this ).animate({
                 marginLeft: '-=30'
-            }, 300, function(){
+            }, 400, function(){
                 // Callback.
             });
             // Hide the replies section and the original message.
@@ -304,7 +308,7 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
             $( '#origmessage_'+id).hide(750);
             $( this ).removeClass('opened');
             // Now show all the other messageholder div's.
-            $( '.messageholder-main').not(this).show(500);
+            $( '.messageholder-main' ).show(500);
         }
 
     });
@@ -401,23 +405,46 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
                 capdmhelpdesk_alert_msg(localizedEditString, 0);
             });
 
-            var promises = ajax.call([
-                { methodname: 'local_capdmhelpdesk_reload_messages', args:{ userid: userID } }
-            ]);
-            promises[0].done(function(data) {
-                // We have the data - lets re-render the template with it.
-                templates.render('local_capdmhelpdesk/message_list', data).done(function(html, js) {
-                    $('[data-region="capdmhelpdesk-msg-list"]').replaceWith(html);
-                    // And execute any JS that was in the template.
-                    templates.runTemplateJS(js);
-                    // Fade back to normal.
-                    setTimeout(function(){
-                        $( '#capdmhelpdesk-msg-list').fadeTo(300, 1, function(){
-                            capdmhelpdesk_alert_msg('', -1);
-                        });
-                    }, 750);
-                }).fail(notification.exception);
-            }).fail(notification.exception);
+            switch(userType){
+                case 'admin':
+                    var promises = ajax.call([
+                        { methodname: 'local_capdmhelpdesk_reload_messages_admin', args:{ userid: userID } }
+                    ]);
+                    promises[0].done(function(data) {
+                        // We have the data - lets re-render the template with it.
+                        templates.render('local_capdmhelpdesk/message_list_admin', data).done(function(html, js) {
+                            $('[data-region="capdmhelpdesk-msg-list"]').replaceWith(html);
+                            // And execute any JS that was in the template.
+                            templates.runTemplateJS(js);
+                            // Fade back to normal.
+                            setTimeout(function(){
+                                $( '#capdmhelpdesk-msg-list').fadeTo(300, 1, function(){
+                                    capdmhelpdesk_alert_msg('', -1);
+                                });
+                            }, 750);
+                        }).fail(notification.exception);
+                    }).fail(notification.exception);
+                    break;
+                default:
+                    var promises = ajax.call([
+                        { methodname: 'local_capdmhelpdesk_reload_messages', args:{ userid: userID } }
+                    ]);
+                    promises[0].done(function(data) {
+                        // We have the data - lets re-render the template with it.
+                        templates.render('local_capdmhelpdesk/message_list', data).done(function(html, js) {
+                            $('[data-region="capdmhelpdesk-msg-list"]').replaceWith(html);
+                            // And execute any JS that was in the template.
+                            templates.runTemplateJS(js);
+                            // Fade back to normal.
+                            setTimeout(function(){
+                                $( '#capdmhelpdesk-msg-list').fadeTo(300, 1, function(){
+                                    capdmhelpdesk_alert_msg('', -1);
+                                });
+                            }, 750);
+                        }).fail(notification.exception);
+                    }).fail(notification.exception);
+                    break;
+            }
         });
     });
 
@@ -430,9 +457,27 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
         // Check what is being requested.
         switch(action){
             case 'reply':   // Show the reply form.
-                $( '#msgid_'+id+'_reply_holder' ).show(250);
-                // Set focus to the reply textarea.
-                $( '#msgid_'+id+'_reply_holder form textarea#reply' ).focus();
+                if( $( '#msgid_'+id+'_reply_holder' ).hasClass('opened') ){
+                    $( '#msgid_'+id+'_reply_holder' ).hide(250);
+                    $( '#msgid_'+id+'_reply_holder' ).removeClass('opened');
+                } else {
+                    $( '#msgid_'+id+'_reply_holder' ).show(250);
+                    // Set focus to the reply textarea.
+                    $( '#msgid_'+id+'_reply_holder form textarea#reply' ).focus();
+                    $( '#msgid_'+id+'_reply_holder' ).addClass('opened');
+                }
+                break;
+            case 'collapse':
+                $( '#msgid_'+id ).find('i').fadeOut(300);
+                $( '#msgid_'+id+'_details' ).animate({
+                    marginLeft: '-=30'
+                });
+                // Hide the replies section and the original message.
+                $( '#msgid_'+id+'_replies').hide(750);
+                $( '#origmessage_'+id).hide(750);
+                $( '#msgid_'+id+'_details' ).removeClass('opened');
+                // Now show all the other messageholder div's.
+                $( '.messageholder-main' ).show(500);
                 break;
             case 'close':
                 // Set the status of this message to closed.
@@ -445,7 +490,7 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
 //                    $('[data-region="msgid_'+id+'_replies"]').replaceWith(html);
   //                  // And execute any JS that was in the template.
 //                    templates.runTemplateJS(js);
-console.log(data);
+
                     $.when(str.get_string('messageclosed', 'local_capdmhelpdesk')).done(function(localizedEditString) {
                         capdmhelpdesk_alert_msg(localizedEditString, 0);
                     });
@@ -459,7 +504,7 @@ console.log(data);
 
     $( 'body' ).on('click', '#test', function(){
 
-        toggleNewForm(0);
+        toggleNewForm(0, 'new');
 
     });
 
@@ -469,10 +514,10 @@ console.log(data);
     //--------------------------------------------------------------------------
 
     // Function to toggle visibility of new message holding message
-    function toggleNewForm(direction){
+    function toggleNewForm(direction, item){
 
-        var msg = $( '#new_message_waiting' );
-        var form = $( '#new_message_form' );
+        var msg = $( '#'+item+'_message_waiting' );
+        var form = $( '#'+item+'_message_form' );
 
         switch(direction){
             case 0:

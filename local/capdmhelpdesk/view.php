@@ -69,6 +69,4 @@ if(has_capability('local/capdmhelpdesk:admin', $context)){
     }
 }
 
-//echo(capdmhelpdesk_send_notification($USER, 'new'));
-
 echo $output->footer();

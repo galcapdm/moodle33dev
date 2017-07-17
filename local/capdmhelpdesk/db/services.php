@@ -60,6 +60,15 @@ $functions = array(
         'capabilities'=> '',
         'ajax'        => 'true',
     ),
+    'local_capdmhelpdesk_reload_messages_admin' => array(
+        'classname'   => 'local_capdmhelpdesk\external',
+        'methodname'  => 'reload_messages_admin',
+        'classpath'   => '',
+        'description' => 'Get all messages for the current admin user.',
+        'type'        => 'read',
+        'capabilities'=> '',
+        'ajax'        => 'true',
+    ),
     'local_capdmhelpdesk_update_message' => array(
         'classname'   => 'local_capdmhelpdesk\external',
         'methodname'  => 'update_message',

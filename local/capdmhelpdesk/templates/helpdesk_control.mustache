@@ -42,7 +42,6 @@
             </div>
 
             <div id="capdmhelpdesk-control-buttons">
-                <button id="test">TEST</button>
                 <button id="reload" class="btn btn-default helpdesk-control-button" title="{{# str }}reload, local_capdmhelpdesk{{/str}}"><i class="fa fa-repeat"></i></button>
                 <button id="show_all" class="btn btn-default helpdesk-control-button" title="{{# str }}btnshowall, local_capdmhelpdesk{{/str}}">{{# str }}btnshowall, local_capdmhelpdesk{{/str}}</button>
                 <button id="show_open" class="btn btn-default helpdesk-control-button" title="{{# str }} btnshowopentitle, local_capdmhelpdesk, { "open": {{# quote }}{{open}}{{/ quote }} }{{/str}}">{{# str }}btnshowopen, local_capdmhelpdesk, { "open": {{# quote }}{{open}}{{/ quote }} }{{/str}}</button>
@@ -65,7 +64,13 @@
                     </div>
                     <div id="msgid_{{id}}" class="messageholder-main holder_status_{{status}}" title="{{# str }}clicktoview, local_capdmhelpdesk{{/str}}">
                         <div class="status status_{{status}}">
-                            <i id="closeicon_{{id}}" class="fa fa-close closeicon_{{status}}" style="display: none;"></i>
+                            <div class="message-icons">
+                                <i id="action_collapse_{{id}}" class="fa fa-close closeicon_{{status}} capdmhelpdesk-action-button" style="display: none;"></i>
+                                <i id="action_reply_{{id}}" class="fa fa-reply replyicon_{{status}} capdmhelpdesk-action-button" style="display: none;" title="{{# str}}openreplybox, local_capdmhelpdesk{{/str}}"></i>
+                                <i id="action_close_{{id}}" class="fa fa-window-close closestatusicon_{{status}} capdmhelpdesk-action-button" title="{{# str }}closemessagebuttontitle, local_capdmhelpdesk{{/str}}" style="display: none;"></i>
+                            </div>
+
+
                             <div id="msgid_{{id}}_details" class="messagedetails">
                                 <p><span class="label">{{# str }}msgid, local_capdmhelpdesk{{/str}}</span>{{id}}</p>
                                 <p><span class="label">{{# str }}labelsubject, local_capdmhelpdesk{{/str}}</span>{{subject}}</p>
@@ -84,14 +89,25 @@
                         </div>
                     </div>
                 <div id="msgid_{{id}}_reply_holder" class="messageholder-replies" style="display: none;">
-                    <form id="form_reply_message" class="form_validate" action="#" method="post">
-                        <textarea id="reply" name="reply" class="form-control" rows="6" placeholder="Enter your reply here..." type="text"></textarea>
-                        <input id="replyto" name="replyto" type="hidden" value="{{id}}">
-                        <input id="replierid" name="replierid" type="hidden" value="{{userid}}">
-                        <input id="notify" name="notify" type="hidden" value="admin">
-                        <input id="owner" name="owner" type="hidden" value="{{userid}}">
-                        <button class="btn btn-primary" title="{{#str}}replyformbuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}replyformbutton, local_capdmhelpdesk{{/str}}</button>
-                    </form>
+                    <div id="reply_message_waiting" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 waitingmessage" style="display: none;">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <p><i class="fa fa-spinner fa-pulse fa-4x fa-fw"></i></p>
+                                <h3>{{# str}}sendingnewmessage, local_capdmhelpdesk{{/str}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="reply_message_form">
+                        <form id="form_reply_message_{{id}}" class="form_validate form_reply_message" action="#" method="post">
+                            <textarea id="reply" name="reply" class="form-control" rows="6" placeholder="Enter your reply here..." type="text"></textarea>
+                            <input id="replyto" name="replyto" type="hidden" value="{{id}}">
+                            <input id="replierid" name="replierid" type="hidden" value="{{userid}}">
+                            <input id="notify" name="notify" type="hidden" value="admin">
+                            <input id="owner" name="owner" type="hidden" value="{{userid}}">
+                            <input id="subject" name="subject" type="hidden" value="{{subject}}">
+                            <button class="btn btn-primary" title="{{#str}}replyformbuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}replyformbutton, local_capdmhelpdesk{{/str}}</button>
+                        </form>
+                    </div>
                 </div>
                 <div data-region="msgid_{{id}}_replies" id="msgid_{{id}}_replies" class="messageholder-replies" style="display: none;">
                     <div class="waiting"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i><span class="sr-only">{{# str}}loadingreplies, local_capdmhelpdesk{{/str}}</span></div>
@@ -138,6 +154,7 @@
 
                             <div>
                                 <input id="userid" name="userid" type="hidden" value="{{userid}}">
+                                <input id="usertype" name="usertype" type="hidden" value="student">
                                 <button id="new_message_submit" class="btn btn-primary">{{#str}}submit{{/str}}</button>
                             </div>
                             </form>

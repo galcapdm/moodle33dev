@@ -38,6 +38,7 @@ use external_warnings;
 use stdClass;
 use context_system;
 use core_user;
+use DateTime;
 
 /**
  * This is the external API for this plugin.
@@ -101,11 +102,11 @@ class external extends external_api {
         $result = array();
         $result['replies'] = array();       // This is an array to hold the replies records.  An array of arrays!
         $result['replyto'] = $replyto;      // The original message ID.
-//        $result['status'] = $status;        // The status of the current message i.e. open, closed.
-//        $result['origmessage'] = $status;        // Text of the original message.
+        $result['status'] = $status;        // The status of the current message i.e. open, closed.
+        $result['origmessage'] = $status;   // Text of the original message.
         $result['warnings'] = $warnings;    // Any warnings issued.
 
-        $replies = $DB->get_records_sql('select r.id, replyto, r.message, req.message as origmessage, from_unixtime(r.submitdate, \'%D %M %Y %H:%i\') as submitdate, username, case when username is null then \'You\' else concat(firstname, \' \', lastname) end as fullname, case replierid when req.userid then \'You\' else \'other\' end as \'originator\', status from {capdmhelpdesk_replies} r left join {user} u on r.replierid = u.id inner join {capdmhelpdesk_requests} req on r.replyto = req.id where replyto = :replyto order by submitdate desc', array('replyto'=>$replyto));
+        $replies = $DB->get_records_sql('select r.id, replyto, r.message, req.message as origmessage, from_unixtime(r.submitdate, \'%D %M %Y %H:%i\') as submitdate, username, case when username is null then \'You\' else concat(firstname, \' \', lastname) end as fullname, case replierid when req.userid then \'You\' else \'other\' end as \'originator\', status from {capdmhelpdesk_replies} r left join {user} u on r.replierid = u.id inner join {capdmhelpdesk_requests} req on r.replyto = req.id where replyto = :replyto order by r.submitdate desc', array('replyto'=>$replyto));
 
         foreach ($replies as $r) {
             $result['replies'][] = array(
@@ -240,6 +241,7 @@ class external extends external_api {
             $user = $DB->get_record('user', array('id'=>$userid));
             // Add extra parameters to the $user object to pass into the email process.
             $user->subject = $subject;
+            $user->newmsgid = $ret;
             $ret = capdmhelpdesk_send_notification($user, 'new');
         }
 
@@ -382,6 +384,7 @@ class external extends external_api {
                 'replierid' => new external_value(PARAM_INT, 'Moodle ID of who replied.'),
                 'notify' => new external_value(PARAM_TEXT, 'Indicator of who to notify of this reply.'),
                 'owner' => new external_value(PARAM_INT, 'Indicator of who to notify of this reply.'),
+                'subject' => new external_value(PARAM_TEXT, 'The subject of this message to use in the email reply.'),
             )
         );
     }
@@ -397,7 +400,7 @@ class external extends external_api {
      * @since   Moodle 3.1
      * @throws  moodle_exception
      */
-    public static function save_reply($replyto, $message, $replierid, $notify = 'NA', $owner) {
+    public static function save_reply($replyto, $message, $replierid, $notify = 'NA', $owner, $subject) {
         global $DB, $USER, $PAGE;
 
         $PAGE->set_context(context_system::instance());
@@ -413,6 +416,7 @@ class external extends external_api {
             'replierid' => $replierid,
             'notify' => $notify,
             'owner' => $owner,
+            'subject' => $subject,
         );
         $params = self::validate_parameters(self::save_reply_parameters(), $params);
 
@@ -434,7 +438,10 @@ class external extends external_api {
         $record->id = $replyto;
         $record->status = 0;
         $record->updatedate = time();
-        $record->readflag = 0;
+        // Only update the readflag if the owner is the replier.
+        if($replierid == $owner){
+            $record->readflag = 0;
+        }
         $record->updateby = $replierid;
 
         $ret = $DB->update_record('capdmhelpdesk_requests', $record);
@@ -450,8 +457,12 @@ class external extends external_api {
                     $msg = 'reply';
                     break;
                 case 'admin':
-                    $user = $DB->get_record('user', array('id'=>2));
-                    $msg = 'reply';
+                    // Need to modify the $user object to indicate this is an admin reponse
+                    // so will require looking up who are the admins so they can all be informed.
+                    $user = new stdClass();
+                    $user->id = -1;
+                    $user->msgid = $replyto;
+                    $msg = 'replyadmin';
                     break;
                 default:
                     // Send a message to the site support user (fallback is the site admin) as there is a problem then need to know about.
@@ -460,7 +471,7 @@ class external extends external_api {
                     break;
             }
             // Add some additional parameters to the $user object to use later.
-            //$user->notify = $notify;
+            $user->subject = $subject;
             $ret = capdmhelpdesk_send_notification($user, $msg);
         }
 
@@ -607,6 +618,250 @@ class external extends external_api {
     /*
      *  Reloead messages - END.
      */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*  ############################################################################################
+     *  Reload messages admin - START.
+     *  ############################################################################################
+     */
+
+    /**
+     * Describes the parameters for get_replies.
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.1
+     */
+    public static function reload_messages_admin_parameters() {
+        return new external_function_parameters (
+            array(
+                'userid' => new external_value(PARAM_INT, 'The users moodle ID'),
+            )
+        );
+    }
+
+    /**
+     * Returns the list of messages for supplied message ID.
+     * This is where most of the data logic is performed.
+     *
+     * @param   int     $userid         Moodle ID of the user to get records for.
+     * @return  array                   Array containing warnings and the orig message replies.
+     * @since   Moodle 3.1
+     * @throws  moodle_exception
+     */
+    public static function reload_messages_admin($userid) {
+        global $DB, $USER;
+
+        $userid = $USER->id;
+
+        // Define the $data object that is going to be returned plus any common arrays/objects being used.
+        $data = new stdClass();
+        $messages = array();
+
+        // Get the list of helpdesk requests for the supplied userid.
+        $records = $DB->get_records_sql('select r.id, r.userid, r.category, r.subject, cat.cat_name, r.message, r.submitdate, case r.updatedate when 0 then \'NA\' else r.updatedate end
+                                        as updatedate, r.updateby, r.status, case r.readflag when 0 then \'unread\' else \'read\' end as readflag,
+                                        u.firstname, u.lastname, coalesce(replies, 0) as replies
+                                        from {capdmhelpdesk_requests} r
+                                        inner join (
+                                        select cat.id, cat.name as cat_name, cat.cat_userid, cat.cat_order as sortorder
+                                        from {capdmhelpdesk_cat} cat
+                                        union
+                                        select id, fullname as cat_name, 0 as cat_userid, sortorder from {course} c where c.id > 1 order by sortorder
+                                        ) cat on r.category = cat.id
+                                        left join {user} u on r.updateby = u.id
+                                        left join (
+                                        select replyto, count(id) as replies from mdl_capdmhelpdesk_replies group by replyto
+                                        ) replies on r.id = replies.replyto
+                                        where status = 0 order by submitdate desc');
+
+        // Get some stats for the helpdesk for the supplied userid.
+        $stats = $DB->get_records_sql('select 1 as id, userid, \'open\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where status = 0 group by status union select 2 as id, userid,  \'closed\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where status = 1 group by status union select 3 as id, userid, \'unread\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where readflag = 0 group by readflag');
+
+        $open = 0;
+        $closed = 0;
+        $unread = 0;
+
+        foreach($stats as $s){
+            switch($s->status){
+                case 'open':
+                    $open = $s->totalstatus;
+                    break;
+                case 'closed':
+                    $closed = $s->totalstatus;
+                    break;
+                case 'unread':
+                    $unread = $s->totalstatus;
+                    break;
+            }
+        }
+
+        $message = array();
+
+        // Build an array of arrays representing the records returned from the query.
+        if($records){
+            $updated = false;
+            // Now loop through the records to build the data->messages array.
+            foreach($records as $r){
+                $dateSub = date(DATE_RFC2822, $r->submitdate);
+
+                // Figure out how old this request is.
+                $submitDate = new DateTime($dateSub);
+                $dateNow = new DateTime("now");
+                $msgAge = $submitDate->diff($dateNow);
+                $days = $msgAge->format('%a');
+                $hrs = $msgAge->format('%h');
+                $mins = $msgAge->format('%I');
+                if($days > 0){
+                    $age = $days.' '.get_string('days', 'local_capdmhelpdesk').' '.$hrs.get_string('hrs', 'local_capdmhelpdesk').' '.$mins.get_string('mins', 'local_capdmhelpdesk');
+                    if($days > 1){
+                        $ageStatus = '48';
+                    } else {
+                        $ageStatus = '24';
+                    }
+                } elseif($hrs > 0) {
+                    $age = $hrs.' '.get_string('hrs', 'local_capdmhelpdesk').' '.$mins.get_string('mins', 'local_capdmhelpdesk');
+                    if($hrs > 6){
+                        $ageStatus = '12';
+                    } else {
+                        $ageStatus = '6';
+                    }
+                } else {
+                    $age = $mins.' '.get_string('mins', 'local_capdmhelpdesk');
+                    $ageStatus = '1';
+                }
+
+                $message['id'] = $r->id;
+                $message['owner'] = $r->userid;
+                $message['category'] = $r->cat_name;
+                $message['subject'] = $r->subject;
+                $message['message'] = $r->message;
+                $message['status'] = $r->status;
+                $message['readflag'] = $r->readflag;
+                $message['submitdate'] = $dateSub;
+                $message['replies'] = $r->replies;
+                $message['firstname'] = $r->firstname;
+                $message['lastname'] = $r->lastname;
+                $message['age'] = $age;
+                $message['agestatus'] = $ageStatus;
+                if($r->updatedate != 'NA'){
+                    $dateUp = date(DATE_RFC2822, $r->updatedate);
+                    $message['updatedate'] = $dateUp;
+                } else {
+                    $message['updatedate'] = '';
+                }
+                array_push($messages, $message);
+                // Need to unset the array as not always the same values being set.
+                // If you don't unset then the next record keeps the last value.
+                unset($message);
+            }
+
+        }
+
+        // Set the value for various items sent to the template.
+        //$data->cats = $cats;
+        $data->messages = $messages;
+
+        return $data;
+    }
+
+    /**
+     * This checks the data type of the returned
+     * values to make sure they are what is expected.
+     *
+     * @return external_single_structure
+     * @since Moodle 3.1
+     */
+    public static function reload_messages_admin_returns() {
+        return new external_single_structure(
+            array(
+                'messages' => new external_multiple_structure(
+                    new external_single_structure(
+                        array(
+                            'id' => new external_value(PARAM_INT, 'ID of the message.'),
+                            'owner' => new external_value(PARAM_TEXT, 'UserID of the message owner.'),
+                            'category' => new external_value(PARAM_TEXT, 'Category this message belongs to.'),
+                            'subject' => new external_value(PARAM_TEXT, 'Subject of the message.'),
+                            'message' => new external_value(PARAM_TEXT, 'Text of the message.'),
+                            'status' => new external_value(PARAM_INT, 'Message status.'),
+                            'readflag' => new external_value(PARAM_TEXT, 'Message readflag status.'),
+                            'submitdate' => new external_value(PARAM_TEXT, 'Date message was created.'),
+                            'replies' => new external_value(PARAM_INT, 'Number of replies to this message.'),
+                            'firstname' => new external_value(PARAM_TEXT, 'First name of the message orginator.'),
+                            'lastname' => new external_value(PARAM_TEXT, 'Last name of the message orginator.'),
+                            'age' => new external_value(PARAM_TEXT, 'Age of the message.'),
+                            'agestatus' => new external_value(PARAM_INT, 'Age of the message.'),
+                            'updatedate' => new external_value(PARAM_TEXT, 'Date message was updated.'),
+                        )
+                    )
+                ),
+                'warnings' => new external_warnings(),
+            )
+        );
+    }
+
+    /*
+     *  Reloead messages admin - END.
+     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /*  ############################################################################################
      *  Update a message - START.
