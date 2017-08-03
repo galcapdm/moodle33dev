@@ -242,7 +242,7 @@ class external extends external_api {
             // Add extra parameters to the $user object to pass into the email process.
             $user->subject = $subject;
             $user->newmsgid = $ret;
-            $ret = capdmhelpdesk_send_notification($user, 'new');
+            $ret = capdmhelpdesk_send_notification($user, 'new', $category);
         }
 
         // Build an array to hold the itmes to be returned to the template.
@@ -385,6 +385,7 @@ class external extends external_api {
                 'notify' => new external_value(PARAM_TEXT, 'Indicator of who to notify of this reply.'),
                 'owner' => new external_value(PARAM_INT, 'Indicator of who to notify of this reply.'),
                 'subject' => new external_value(PARAM_TEXT, 'The subject of this message to use in the email reply.'),
+                'status' => new external_value(PARAM_INT, 'The value for the status of this message. Works in hand with autoclose.'),
             )
         );
     }
@@ -400,7 +401,7 @@ class external extends external_api {
      * @since   Moodle 3.1
      * @throws  moodle_exception
      */
-    public static function save_reply($replyto, $message, $replierid, $notify = 'NA', $owner, $subject) {
+    public static function save_reply($replyto, $message, $replierid, $notify = 'NA', $owner, $subject, $status = 0) {
         global $DB, $USER, $PAGE;
 
         $PAGE->set_context(context_system::instance());
@@ -417,6 +418,7 @@ class external extends external_api {
             'notify' => $notify,
             'owner' => $owner,
             'subject' => $subject,
+            'status' => $status,
         );
         $params = self::validate_parameters(self::save_reply_parameters(), $params);
 
@@ -436,10 +438,10 @@ class external extends external_api {
 
         $record = new stdClass();
         $record->id = $replyto;
-        $record->status = 0;
+        $record->status = $status;
         $record->updatedate = time();
         // Only update the readflag if the owner is the replier.
-        if($replierid == $owner){
+        if($replierid != $owner){
             $record->readflag = 0;
         }
         $record->updateby = $replierid;
@@ -552,8 +554,9 @@ class external extends external_api {
         $result['status'] = $status;        // The status of the current message i.e. open, closed.
         $result['warnings'] = $warnings;    // Any warnings issued.
 
-        $messages = $DB->get_records_sql('select r.id, r.userid, r.category, r.subject, cat.cat_name, r.message, r.submitdate, r.updatedate, r.updateby, r.status, r.readflag,
-                                        u.firstname, u.lastname
+        $messages = $DB->get_records_sql('select r.id, r.userid, r.category, r.subject, cat.cat_name, r.message, r.submitdate, r.updatedate, r.updateby,
+                                        case r.status when -1 then 0 else r.status end as status,
+                                        case r.readflag when 0 then \'unread\' else \'read\' end as readflag, u.firstname, u.lastname
                                         from {capdmhelpdesk_requests} r
                                         inner join (
                                         select cat.id, cat.name as cat_name, cat.cat_userid, cat.cat_order as sortorder
@@ -566,17 +569,25 @@ class external extends external_api {
 
         foreach ($messages as $m) {
             $dateSub = date(DATE_RFC2822, $m->submitdate);
+            if($m->updatedate != 'NA'){
+                $dateUp = date(DATE_RFC2822, $m->updatedate);
+            } else {
+                $dateUp = '';
+            }
+
             $result['messages'][] = array(
                 'id' => $m->id,
                 'userid' => $m->userid,
                 'subject' => $m->subject,
                 'message' => $m->message,
                 'submitdate' => $dateSub,
-                'updatedate' => $m->updatedate,
+                'updatedate' => $dateUp,
                 'updateby' => $m->updateby,
                 'status' => $m->status,
                 'readflag' => $m->readflag,
                 'params' => $m->params,
+                'firstname' => $m->firstname,
+                'lastname' => $m->lastname,
             );
         }
 
@@ -742,20 +753,24 @@ class external extends external_api {
                 if($days > 0){
                     $age = $days.' '.get_string('days', 'local_capdmhelpdesk').' '.$hrs.get_string('hrs', 'local_capdmhelpdesk').' '.$mins.get_string('mins', 'local_capdmhelpdesk');
                     if($days > 1){
-                        $ageStatus = '48';
+                        $ageStatus = '25';
                     } else {
                         $ageStatus = '24';
                     }
                 } elseif($hrs > 0) {
                     $age = $hrs.' '.get_string('hrs', 'local_capdmhelpdesk').' '.$mins.get_string('mins', 'local_capdmhelpdesk');
-                    if($hrs > 6){
+                    if($hrs > 11){
+                        $ageStatus = '24';
+                    } else if($hrs > 7){
                         $ageStatus = '12';
+                    } else if($hrs > 3){
+                        $ageStatus = '8';
                     } else {
-                        $ageStatus = '6';
+                        $ageStatus = '4';
                     }
                 } else {
                     $age = $mins.' '.get_string('mins', 'local_capdmhelpdesk');
-                    $ageStatus = '1';
+                    $ageStatus = '4';
                 }
 
                 $message['id'] = $r->id;
@@ -771,6 +786,7 @@ class external extends external_api {
                 $message['lastname'] = $r->lastname;
                 $message['age'] = $age;
                 $message['agestatus'] = $ageStatus;
+                $message['userid'] = $userid;
                 if($r->updatedate != 'NA'){
                     $dateUp = date(DATE_RFC2822, $r->updatedate);
                     $message['updatedate'] = $dateUp;
@@ -818,6 +834,7 @@ class external extends external_api {
                             'lastname' => new external_value(PARAM_TEXT, 'Last name of the message orginator.'),
                             'age' => new external_value(PARAM_TEXT, 'Age of the message.'),
                             'agestatus' => new external_value(PARAM_INT, 'Age of the message.'),
+                            'userid' => new external_value(PARAM_TEXT, 'Userid of the user posting the message.'),
                             'updatedate' => new external_value(PARAM_TEXT, 'Date message was updated.'),
                         )
                     )

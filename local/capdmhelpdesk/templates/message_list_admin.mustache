@@ -43,18 +43,18 @@
                     <i id="action_reply_{{id}}" class="fa fa-reply replyicon_{{status}} capdmhelpdesk-action-button" style="display: none;" title="{{# str}}openreplybox, local_capdmhelpdesk{{/str}}"></i>
                     <i id="action_close_{{id}}" class="fa fa-window-close closestatusicon_{{status}} capdmhelpdesk-action-button" title="{{# str }}closemessagebuttontitle, local_capdmhelpdesk{{/str}}" style="display: none;"></i>
                 </div>
-                <div id="msgid_{{id}}_details" class="messagedetails">
-                    <div class="status-holders status agestatus_{{agestatus}}">
-                        <div class="status-item status agestatus_{{agestatus}}">
+                <div id="msgid_{{id}}_details" class="messagedetails adminview">
+                    <div class="status-holders status agestatus_{{agestatus}}x">
+                        <div class="status-item status agestatus_{{agestatus}}x">
                             {{# str }}msgage, local_capdmhelpdesk{{/str}}</span><br /><strong>{{age}}</strong>
                         </div>
-                        <div class="status-item status agestatus_{{agestatus}}">
+                        <div class="status-item status agestatus_{{agestatus}}x">
                             {{# str }}msgid, local_capdmhelpdesk{{/str}}</span><br /><strong>{{id}}</strong>
                         </div>
-                        <div class="status-item status agestatus_{{agestatus}}">
+                        <div class="status-item status agestatus_{{agestatus}}x">
                             {{# str }}labelreplies, local_capdmhelpdesk{{/str}}</span><br /><strong>{{replies}}</strong>
                         </div>
-                        <div class="status-item status agestatus_{{agestatus}}">
+                        <div class="status-item status agestatus_{{agestatus}}x">
                             {{# str }}labelsubmitdate, local_capdmhelpdesk{{/str}}</span><br /><strong>{{# str }} submitdate, local_capdmhelpdesk, { "datesubmitted": {{# quote }}{{submitdate}}{{/ quote }} }{{/str}}</strong>
                         </div>
                     </div>
@@ -90,7 +90,7 @@
             <input id="owner" name="owner" type="hidden" value="{{owner}}">
             <input id="subject" name="subject" type="hidden" value="{{subject}}">
             <input id="notify" name="notify" type="hidden" value="student">
-            <button class="btn btn-primary" title="{{#str}}replyformbuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}replyformbutton, local_capdmhelpdesk{{/str}}</button>
+            <button id="replyformbuttontitle" class="btn btn-primary" title="{{#str}}replyformbuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}replyformbutton, local_capdmhelpdesk{{/str}}</button>
         </form>
     </div>
     <div data-region="msgid_{{id}}_replies" id="msgid_{{id}}_replies" class="messageholder-replies" style="display: none;">

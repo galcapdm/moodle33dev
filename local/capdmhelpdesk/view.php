@@ -49,7 +49,10 @@ echo $output->header();
 // All helpdesk activities take place in the system context.
 $context = context_system::instance();
 
-if(has_capability('local/capdmhelpdesk:admin', $context)){
+// Check to see if this user ia a Helpdesk admin.
+// Check with capability or whether they have any enrolments as a Teacher (3) or higher permission enrolment.
+// Courses they have access to helpdesk requests on are limited to the courses they are enrolled on.
+if(has_capability('local/capdmhelpdesk:admin', $context) || capdmhelpdesk_get_user_enrolments_role($USER->id, 3)){
         $helpdeskcontroladmin = new \local_capdmhelpdesk\output\helpdesk_control_admin();
         echo $output->render($helpdeskcontroladmin);
 

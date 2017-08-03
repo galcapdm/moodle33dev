@@ -68,6 +68,7 @@ $string['submitdate'] = '{$a->datesubmitted}';
 $string['updatedate'] = '{$a->dateupdated} by {$a->fullname}';
 $string['togglenewform'] = 'Show/hide the new message form';
 $string['waiting'] = 'Loading&hellip;';
+$string['replyformneedinput'] = 'Please enter your reply text in the input box above and then click on the "Reply" button.';
 $string['intro'] = 'Use this helpdesk to contact us about any problems you have with using our site. Click on the "plus" icon above to open the form to create a new message. When you submit the form someone will be in touch.
 
 Click on a message to see more details and any replies. Click again to close it.';
@@ -89,12 +90,17 @@ $string['days'] = 'day(s)';
 $string['hrs'] = 'hrs';
 $string['mins'] = 'min';
 $string['msgage'] = 'Message age: ';
+$string['togglecatstitle'] = 'Show/hide my helpdesk item details.';
+$string['autoclose'] = 'Auto close this message?';
+$string['autoclose_help'] = 'If you select this option then this message will be closed automatically by the helpdesk cron job (if active). A default value of 24hrs past the update time is set for this action.';
+$string['autoclosetitle'] = 'Check/un-check this option for this message to auto close.';
+$string['catviewonly'] = 'View messages just for this category.';
 $string['hrallmessage'] = 'Show all';
-$string['hr1message'] = '< 1 hr';
-$string['hr6message'] = '> 1 and < 6 hrs';
-$string['hr12message'] = '> 6 and < 12 hrs';
-$string['hr24message'] = '> 24 and < 48hrs';
-$string['hr48message'] = '> 48 hrs';
+$string['hr4message'] = '< 4 hr';
+$string['hr8message'] = '> 4 and < 8 hrs';
+$string['hr12message'] = '> 8 and < 12 hrs';
+$string['hr24message'] = '> 12 and < 24hrs';
+$string['hr25message'] = '> 24 hrs';
 $string['btnshowopen'] = 'Show open only ({$a->open})';
 $string['btnshowopentitle'] = 'There are {$a->open} open meassages in your helpdesk list. Click here to view just these messages';
 $string['btnshowclosed'] = 'Show closed only ({$a->closed})';
@@ -102,7 +108,7 @@ $string['btnshowclosedtitle'] = 'There are {$a->totalclosed} closed meassages in
 $string['nopermisson'] = 'Sorry, but you do not have permission to use this service. Please check with your system administrator for further assistance.';
 $string['reload'] = 'Reload messages';
 $string['clicktoview'] = 'Click here to view this message and any replies. Click again to close.';
-$string['openreplybox'] = 'Click here to show/hide the reply form.';
+$string['openreplybox'] = 'Click here to show/hide the reply form';
 $string['reloading'] = 'Reloading messages&hellip;please wait.';
 $string['closemessagebutton'] = 'Update message status to "CLOSED"';
 $string['closemessagebuttontitle'] = 'Click here to mark this message closed.';
@@ -113,6 +119,7 @@ $string['replyformbuttontitle'] = 'Click here to add your reply.';
 $string['newmessageadded'] = 'Your message has been added and the relevant person notified.';
 $string['messageclosed'] = 'This message has been closed.';
 $string['alreadyclosed'] = 'This message has been closed. To reopen smimply add a reply and it will automatically be re-opened and the relevant person nootified.';
+$string['helpdesk_no_admin_set'] = 'NOTE!!! There are no tutors or admins set for this helpdesk category. Please check and amend where necessary.';
 $string['sendingnewmessage'] = 'Please wait&hellip;saving your message and sending confirmation emails.';
 
 
@@ -123,11 +130,18 @@ This message is just to confirm your Helpdesk request has been received and the 
 Regards
 
 {$a->site}';
+$string['helpdesk_new_message_thanks_html'] = '<p>Dear {$a->fname}</p>
+
+<p>This message is just to confirm your Helpdesk request has been received and the relevant person has been notified. If your request requires an answer you will be notified via email when this is done and you can return to your Helpdesk to view the update.</p>
+
+<p>Regards</p>
+
+<p>{$a->site}</p>';
 $string['helpdesk_new_subject_user'] = 'Confirmation of your Helpdesk request at {$a->site}';
 
 $string['helpdesk_new_message_admin'] = 'Dear Admin/Tutor,
 
-A new helpdesk message at {$a->site} has been received and requires your attention.  Please log in and check.
+A new helpdesk message at {$a->site} ({$a->sitewww}) has been received and requires your attention.  Please log in and check.
 
 Message ID: {$a->newmsgid}
 Message from : {$a->sender}
@@ -136,6 +150,27 @@ Subject : "{$a->subject}"
 Regards
 
 {$a->site}';
+$string['helpdesk_new_message_admin_html'] = '<p>Dear Admin/Tutor,</p>
+
+<p>A new helpdesk message at <a href="{$a->sitewww}">{$a->site}</a> has been received and requires your attention.  Please log in and check.</p>
+
+<p>Message ID: {$a->newmsgid}</p>
+<p>Message from : {$a->sender}</p>
+<p>Subject : "{$a->subject}"</p>
+
+<p>Regards</p>
+
+<p>{$a->site}</p>
+
+<style type="text/css">
+p {
+    margin: 0 0 1em 0;
+}
+a {
+    font-weight: bold;
+    text-decoration: none;
+}
+</style>';
 
 $string['helpdesk_reply_message_user'] = 'Dear {$a->fname}
 
@@ -262,3 +297,5 @@ This message is just to confirm your Helpdesk request has been received and the 
 Regards
 
 System Administrator';
+// capdmhelpdesk.js strings
+$string['enterreplytext'] = 'Please enter some text in teh box above for your reply.';

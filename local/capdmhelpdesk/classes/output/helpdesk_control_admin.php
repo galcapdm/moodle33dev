@@ -37,7 +37,7 @@ class helpdesk_control_admin implements renderable, templatable {
      * @return stdClass
      */
     public function export_for_template(renderer_base $output) {
-      global $DB, $USER;
+      global $DB, $USER, $OUTPUT;
 
         $userid = $USER->id;
 
@@ -45,35 +45,26 @@ class helpdesk_control_admin implements renderable, templatable {
         $data = new stdClass();
         $messages = array();
 
+        // Get a list of CAPDMHELPDESK categories this user has access to.
+        // If they are a site admin then they see all.
+        $arrCatCoursesList = array();
+        if(array_key_exists($USER->id, get_admins())){
+            $catfilter = ' ';
+        } else {
+            // Limit this CAPDMHELPDESK admin to only view their tickets.
+            $arrCatCourses = capdmhelpdesk_get_user_enrolments_role($USER->id);
 
-/*
- *      This is all category stuff
- *
-        $records = $DB->get_records_sql('select r.id, r.userid, r.category, r.subject, cat.cat_name, r.message, r.submitdate, r.updatedate, r.updateby, r.status, r.readflag,
-                                        u.firstname, u.lastname
-                                        from {capdmhelpdesk_requests} r
-                                        inner join (
-                                        select cat.id, cat.name as cat_name, cat.cat_userid, cat.cat_order as sortorder
-                                        from {capdmhelpdesk_cat} cat
-                                        union
-                                        select id, fullname as cat_name, 0 as cat_userid, sortorder from {course} c where c.id > 1 order by sortorder
-                                        ) cat on r.category = cat.id
-                                        left join {user} u on r.updateby = u.id
-                                        where userid = :userid order by submitdate desc', array('userid'=>$USER->id));
-
-
-        $cats = array();
-        $cat = array();
-
-        $categories = $DB->get_records_sql('select cat.id, cat.name as cat_name, cat.cat_userid, cat.cat_order as sortorder from {capdmhelpdesk_cat} cat union select id, fullname as cat_name, 0 as cat_userid, sortorder from {course} c where c.id > 1 order by sortorder');
-
-        // Build an array of arrays representing the records returned from the query.
-        foreach($categories as $c){
-            $cat['id'] = $c->id;
-            $cat['value'] = $c->cat_name;
-            array_push($cats, $cat);
+            $crsfilter = '';
+            if($arrCatCourses){
+                foreach($arrCatCourses as $c){
+                    $crsfilter .= $c->id.', ';
+                    $arrCourseAdmin['id'] = $c->id;
+                    $arrCourseAdmin['fullname'] = $c->fullname;
+                    array_push($arrCatCoursesList, $arrCourseAdmin);
+                }
+            }
+            $catfilter = ' and r.category in ('.substr($crsfilter, 0, strlen($crsfilter)-2).') ';
         }
-*/
 
         // Get the list of helpdesk requests for the supplied userid.
         $records = $DB->get_records_sql('select r.id, r.userid, r.category, r.subject, cat.cat_name, r.message, r.submitdate, case r.updatedate when 0 then \'NA\' else r.updatedate end
@@ -90,7 +81,7 @@ class helpdesk_control_admin implements renderable, templatable {
                                         left join (
                                         select replyto, count(id) as replies from mdl_capdmhelpdesk_replies group by replyto
                                         ) replies on r.id = replies.replyto
-                                        where status = 0 order by submitdate desc');
+                                        where status = 0'.$catfilter.'order by submitdate desc');
 
         // Get some stats for the helpdesk for the supplied userid.
         $stats = $DB->get_records_sql('select 1 as id, userid, \'open\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where status = 0 group by status union select 2 as id, userid,  \'closed\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where status = 1 group by status union select 3 as id, userid, \'unread\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where readflag = 0 group by readflag');
@@ -131,21 +122,25 @@ class helpdesk_control_admin implements renderable, templatable {
                 $mins = $msgAge->format('%I');
                 if($days > 0){
                     $age = $days.' '.get_string('days', 'local_capdmhelpdesk').' '.$hrs.get_string('hrs', 'local_capdmhelpdesk').' '.$mins.get_string('mins', 'local_capdmhelpdesk');
-                    if($days > 1){
-                        $ageStatus = '48';
+                    if($days >= 1 ){
+                        $ageStatus = '25';
                     } else {
                         $ageStatus = '24';
                     }
                 } elseif($hrs > 0) {
                     $age = $hrs.' '.get_string('hrs', 'local_capdmhelpdesk').' '.$mins.get_string('mins', 'local_capdmhelpdesk');
-                    if($hrs > 6){
+                    if($hrs > 11){
+                        $ageStatus = '24';
+                    } else if($hrs > 7){
                         $ageStatus = '12';
+                    } else if($hrs > 3){
+                        $ageStatus = '8';
                     } else {
-                        $ageStatus = '6';
+                        $ageStatus = '4';
                     }
                 } else {
                     $age = $mins.' '.get_string('mins', 'local_capdmhelpdesk');
-                    $ageStatus = '1';
+                    $ageStatus = '4';
                 }
 
                 $message['id'] = $r->id;
@@ -176,10 +171,12 @@ class helpdesk_control_admin implements renderable, templatable {
         // Set the value for various items sent to the template.
         //$data->cats = $cats;
         $data->messages = $messages;
+        $data->admincategories = $arrCatCoursesList;
         $data->userid = $USER->id;
         $data->open = $open;
         $data->closed = $closed;
         $data->unread = $unread;
+        $data->autoclosehelp = $OUTPUT->help_icon('autoclose', 'local_capdmhelpdesk');
 
         return $data;
     }

@@ -44,33 +44,29 @@ class helpdesk_control implements renderable, templatable {
         $data = new stdClass();
         $messages = array();
 
-        $records = $DB->get_records_sql('select r.id, r.userid, r.category, r.subject, cat.cat_name, r.message, r.submitdate, r.updatedate, r.updateby, r.status, r.readflag,
-                                        u.firstname, u.lastname
-                                        from {capdmhelpdesk_requests} r
-                                        inner join (
-                                        select cat.id, cat.name as cat_name, cat.cat_userid, cat.cat_order as sortorder
-                                        from {capdmhelpdesk_cat} cat
-                                        union
-                                        select id, fullname as cat_name, 0 as cat_userid, sortorder from {course} c where c.id > 1 order by sortorder
-                                        ) cat on r.category = cat.id
-                                        left join {user} u on r.updateby = u.id
-                                        where userid = :userid order by submitdate desc', array('userid'=>$USER->id));
-
+        // Add a couple of arrays to hold info.
         $cats = array();
         $cat = array();
 
         $categories = $DB->get_records_sql('select cat.id, cat.name as cat_name, cat.cat_userid, cat.cat_order as sortorder from {capdmhelpdesk_cat} cat union select id, fullname as cat_name, 0 as cat_userid, sortorder from {course} c where c.id > 1 order by sortorder');
 
-        // Build an array of arrays representing the records returned from the query.
+        // Get an array of courses this uers is enrolled on.
+        $usercourses = enrol_get_users_courses($USER->id);
+
+        // Now check to see if they are enrolled on any of the available courses when building alist list available helpdesk categories for them.
+        // All CAPDMHELPDESK categories are included regardless.
         foreach($categories as $c){
-            $cat['id'] = $c->id;
-            $cat['value'] = $c->cat_name;
-            array_push($cats, $cat);
+            if(!is_numeric($c->id) || array_key_exists($c->id, $usercourses)){
+                $cat['id'] = $c->id;
+                $cat['value'] = $c->cat_name;
+                array_push($cats, $cat);
+            }
         }
 
         // Get the list of helpdesk requests for the supplied userid.
         $records = $DB->get_records_sql('select r.id, r.userid, r.category, r.subject, cat.cat_name, r.message, r.submitdate, case r.updatedate when 0 then \'NA\' else r.updatedate end
-                                        as updatedate, r.updateby, r.status, case r.readflag when 0 then \'unread\' else \'read\' end as readflag,
+                                        as updatedate, r.updateby, case r.status when -1 then 0 else r.status end as status, case r.readflag when 0 then \'unread\' else \'read\' end
+                                        as readflag,
                                         u.firstname, u.lastname
                                         from {capdmhelpdesk_requests} r
                                         inner join (
@@ -83,7 +79,8 @@ class helpdesk_control implements renderable, templatable {
                                         where userid = :userid order by submitdate desc', array('userid'=>$USER->id));
 
         // Get some stats for the helpdesk for the supplied userid.
-        $stats = $DB->get_records_sql('select 1 as id, userid, \'open\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where userid = :userid1 and status = 0 group by status union select 2 as id, userid,  \'closed\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where userid = :userid2 and status = 1 group by status union select 3 as id, userid, \'unread\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where userid = :userid3 and readflag = 0 group by readflag', array('userid1' => $userid, 'userid2' => $userid, 'userid3' => $userid));
+        $stats = $DB->get_records_sql('select 1 as id, userid, \'open\' as status, count(case status when -1 then 0 else status end) as totalStatus
+from {capdmhelpdesk_requests} where userid = 3 and (status = 0 or status = -1) group by userid union select 2 as id, userid,  \'closed\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where userid = :userid2 and status = 1 group by status union select 3 as id, userid, \'unread\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where userid = :userid3 and readflag = 0 group by readflag', array('userid1' => $userid, 'userid2' => $userid, 'userid3' => $userid));
 
         $open = 0;
         $closed = 0;
