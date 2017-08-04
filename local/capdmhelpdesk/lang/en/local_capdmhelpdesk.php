@@ -32,6 +32,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['capdmhelpdesk:addinstance'] = 'Add CAPDM Helpdesk';
 $string['capdmhelpdesk:admin'] = 'Is a CAPDMHELPDESK administator';
 $string['capdmhelpdesk:canuse'] = 'Can use the CAPDM Helpdesk local plugin';
+$string['crontask'] = 'Helpdesk admin tasks.';
 
 $string['modulename_help'] = 'Use the capdmhelpdesk local plugin to provide a method for registred site users to make general enquiries as well as requsts for help for a specific course.';
 $string['pluginadministration'] = 'CAPDM Helpdesk administration';
@@ -91,6 +92,7 @@ $string['hrs'] = 'hrs';
 $string['mins'] = 'min';
 $string['msgage'] = 'Message age: ';
 $string['togglecatstitle'] = 'Show/hide my helpdesk item details.';
+$string['autocloselabel'] = 'Set to auto close';
 $string['autoclose'] = 'Auto close this message?';
 $string['autoclose_help'] = 'If you select this option then this message will be closed automatically by the helpdesk cron job (if active). A default value of 24hrs past the update time is set for this action.';
 $string['autoclosetitle'] = 'Check/un-check this option for this message to auto close.';

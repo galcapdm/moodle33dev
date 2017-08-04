@@ -237,7 +237,7 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
             }).fail(notification.exception);
 
         } else {
-            thisParent.find('i').fadeOut(300);
+            thisParent.find('i').not('.keepshow').fadeOut(300);
             $( this ).animate({
                 marginLeft: '-=30'
             }, 400, function(){
@@ -264,8 +264,34 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
         var btnid = $( this ).attr('id');
         var show = btnid.split( '_' )[1];
 
+        // If a message is open then close it first
+        // galgal
+        var openMsg = $( '.messagedetails.opened' );
+        if(openMsg.length > 0){
+            var id = $( openMsg ).attr( 'id' ).split('_')[1];
+            var thisParent = $( '#msgid_'+id );
+            thisParent.find('i').not('.keepshow').fadeOut(300);
+            $( openMsg ).animate({
+                marginLeft: '-=30'
+            }, 400, function(){
+                // Callback.
+            });
+            // Hide the replies section, the reply form and the original message.
+            $( '#action_reply_'+id ).slideUp(250);
+            $( '#msgid_'+id+'_replies').hide(750);
+            $( '#msgid_'+id+'_reply_holder').hide(300);
+            $( '#msgid_'+id+'_reply_holder').removeClass('opened');
+            $( '#origmessage_'+id).hide(750);
+            $( this ).removeClass('opened');
+            // Now show all the other messageholder div's.
+            $( '.messageholder-main' ).show(500);
+            // Enable the toggle button.
+            $( '#toggle_categories' ).attr('disabled', false);
+            toggleStatus = 0;
+        }
+
         // Hide any action buttons if shown
-        $( '.capdmhelpdesk-action-buttons' ).hide(300);
+        //$( '.capdmhelpdesk-action-buttons' ).hide(300);
         $( '.messageholder-replies' ).hide(300);
         // Close any opened messages.
         $( '.opened div.messagedetails' ).animate({
@@ -580,7 +606,12 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
                         var notify = $( '#'+frm+' #notify').val();
                         var owner = $( '#'+frm+' #owner').val();
                         var subject = $( '#'+frm+' #subject').val();
-                        var status = $( '#'+frm+' #autoclose').val();
+                        // Ugly hack to force the default value.
+                        if($( '#'+frm+' #autoclose' )[0].checked ){
+                            status = -1;
+                        } else {
+                            status = 0;
+                        }
 
                         // Disable the submit button to prevent multiple submits.
                         $( '#reply_message_submit' ).attr('disabled', true);

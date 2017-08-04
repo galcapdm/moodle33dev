@@ -48,7 +48,7 @@ defined('MOODLE_INTERNAL') || die();
 function capdmhelpdesk_supports($feature) {
     switch($feature) {
         case FEATURE_MOD_INTRO:         return true;
-        case FEATURE_BACKUP_MOODLE2:    return true;   
+        case FEATURE_BACKUP_MOODLE2:    return true;
         default:                        return null;
     }
 }
@@ -198,20 +198,25 @@ function capdmhelpdesk_print_recent_mod_activity($activity, $courseid, $detail, 
  * @todo Finish documenting this function
  **/
 function local_capdmhelpdesk_cron () {
-	
+
+        global $DB;
+
+        $sql = 'update {capdmhelpdesk_requests} set status = 1 where (unix_timestamp() - case updatedate when 0 then submitdate else updatedate end) > 86400 and status = -1';
+        $ret = $DB->execute($sql);
+
 	return true;
 /*
 	global $DB, $USER;
-	
+
 	// Turn this on to send email messages
 	define("SEND_EMAIL", FALSE);
-	
+
 	//first, check to see if there are any scheduled prompts needing to be run
 	mtrace(get_string('capdmhelpdesk_check_for_prompts','local_capdmhelpdesk'));
-	
+
 	// set a value for the current time and use this throughout
 	$runtime = time();
-	
+
 	try{
 		$prompts = $DB->get_records_sql('select p.id, p.name, p.sqlstatement, p.freq, p.period, p.repeatjob, p.msgid, p.lastrun, m.subject, m.message from mdl_capdmhelpdesk p inner join mdl_capdmhelpdesk_message m on p.msgid = m.id');
 		if($prompts){
@@ -225,7 +230,7 @@ function local_capdmhelpdesk_cron () {
 							$period = 'month';
 							break;
 				}
-				
+
 				// Now see if there are any registered users who fall in to this category
 //				$users = $DB->get_records_sql('select u.id, u.lastname, u.firstname, u.username, u.email, timestampdiff('.$period.', from_unixtime(u.lastlogin), now()) as days_since_last_login, u.lastlogin from mdl_user u left join mdl_capdmhelpdesk_selected sel on u.username = sel.username where u.lastlogin > 0 and timestampdiff('.$period.', from_unixtime(u.lastlogin), now()) >= '.$p->freq.' and sel.username is null');
 
@@ -273,8 +278,8 @@ function local_capdmhelpdesk_cron () {
 							if(in_object('fullname', $u)){
 								$msg = str_replace('~~COURSENAME~~',$u->fullname, $msg);
 							}
-							
-							if(SEND_EMAIL){														
+
+							if(SEND_EMAIL){
 								if(email_to_user($to, get_admin(), $p->subject, strip_tags($msg), build_html_msg($msg),'','',FALSE)){
 									$update = new stdClass();
 									$update->id = $res;
@@ -306,8 +311,8 @@ function local_capdmhelpdesk_cron () {
 				$update->lastrun = $runtime;
 				$DB->update_record('capdmhelpdesk', $update, true);
 			}
-			
-	
+
+
 //			return true;
 		} else {
 				mtrace(get_string('capdmhelpdesk_no_prompts_to_run','local_capdmhelpdesk'));
@@ -317,7 +322,7 @@ function local_capdmhelpdesk_cron () {
 			mtrace(get_string('capdmhelpdesk_exception','local_capdmhelpdesk').$ex);
 
 	}
-*/	
+*/
 }
 
 

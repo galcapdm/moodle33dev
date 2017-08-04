@@ -99,13 +99,13 @@ textarea#message + span.form-control-feedback.fa-times {
 
 textarea#reply + span.form-control-feedback.fa-check {
     position: relative;
-    top: -10px;
+    top: 0px;
     color: green;
 }
 
 textarea#reply + span.form-control-feedback.fa-times {
     position: relative;
-    top: 0px;
+    top: 8px;
     color: darkred;
 }
 
@@ -139,7 +139,7 @@ input#category + span.form-control-feedback.fa-times {
 
 .help-block {
     position: relative;
-    top: -8px;
+    top: 0px;
 }
 
 #add_new_message {
@@ -337,7 +337,7 @@ div#origmessage {
     float: left;
 }
 
-i.closeicon_0, i.closestatusicon_0, i.replyicon_0 {
+i.closeicon_0, i.closeicon_-1, i.closestatusicon_0, i.closestatusicon_-1, i.replyicon_0, i.replyicon_-1  {
     float: left;
     margin: 15px 0 0 13px;
     color: #fff;
@@ -349,7 +349,7 @@ div.status_1 i.closeicon_0, div.status_1 i.closestatusicon_0, div.status_1 i.rep
     color: #666;
 }
 
-i.closeicon_0, i.closeicon_1 {
+i.closeicon_0, i.closeicon_1, i.closeicon_-1 {
     margin-bottom: 3em;
 }
 
