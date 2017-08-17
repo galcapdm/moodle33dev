@@ -91,7 +91,8 @@ $string['days'] = 'day(s)';
 $string['hrs'] = 'hrs';
 $string['mins'] = 'min';
 $string['msgage'] = 'Message age: ';
-$string['togglecatstitle'] = 'Show/hide my helpdesk item details.';
+$string['togglecatstitle'] = 'Show/hide category selectors.';
+$string['togglecompact'] = 'Show/hide message details.';
 $string['autocloselabel'] = 'Set to auto close';
 $string['autoclose'] = 'Auto close this message?';
 $string['autoclose_help'] = 'If you select this option then this message will be closed automatically by the helpdesk cron job (if active). A default value of 24hrs past the update time is set for this action.';
@@ -145,7 +146,7 @@ $string['helpdesk_new_message_admin'] = 'Dear Admin/Tutor,
 
 A new helpdesk message at {$a->site} ({$a->sitewww}) has been received and requires your attention.  Please log in and check.
 
-Message ID: {$a->newmsgid}
+Message ID: {$a->sitewww}?msgid={$a->newmsgid}
 Message from : {$a->sender}
 Subject : "{$a->subject}"
 

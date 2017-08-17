@@ -22,7 +22,6 @@
     Example context (json):{}
 }}
 
-
 <div id="capdmhelpdesk-holder" class="container-fluid">
     <input id="userid" name="userid" type="hidden" value="{{userid}}">
     <input id="usertype" name="usertype" type="hidden" value="admin">
@@ -44,11 +43,12 @@
             </div>
 
             <div id="capdmhelpdesk-control-buttons">
-                <button id="reload" class="btn btn-default helpdesk-control-button" title="{{# str }}reload, local_capdmhelpdesk{{/str}}"><i class="fa fa-repeat"></i></button>
-                <button id="toggle_categories" class="btn btn-default toggle" title="{{# str}}togglecatstitle, local_capdmhelpdesk{{/str}}"><i class="fa fa-eye-slash"></i></button>
+                <button id="reload" class="btn btn-default helpdesk-control-button disable_button" title="{{# str }}reload, local_capdmhelpdesk{{/str}}"><i class="fa fa-repeat"></i></button>
+                <button id="toggle_compact" class="btn btn-default toggle  disable_button" title="{{# str}}togglecatstitle, local_capdmhelpdesk{{/str}}"><i class="fa fa-eye-slash"></i></button>
+                <button id="toggle_categories" class="btn btn-default toggle disable_button" title="{{# str}}togglecompact, local_capdmhelpdesk{{/str}}"><i class="fa fa-list-ul"></i></button>
                 <div id="categories_detail" style="display: none;">
                 {{#admincategories}}
-                    <button id="cat_{{id}}" class="btn btn-default" title="{{# str}}catviewonly, local_capdmhelpdesk{{/str}}">{{fullname}}</button>
+                    <button id="cat_{{id}}" class="btn btn-default toggle disable_button" title="{{# str}}catviewonly, local_capdmhelpdesk{{/str}}">{{fullname}}</button>
                 {{/admincategories}}
                 </div>
             </div>
@@ -67,7 +67,7 @@
                     <h2 class="light-text">{{# str }}nomessagesyetadmin, local_capdmhelpdesk{{/str}}</h2>
                 {{/messages}}
                 {{#messages}}
-                    <div id="msgid_{{id}}" class="messageholder-main holder_age_{{agestatus}}" title="{{# str }}clicktoview, local_capdmhelpdesk{{/str}}">
+                    <div id="msgid_{{id}}" class="messageholder-main holder_age_{{agestatus}} cat_{{categoryid}} category" title="{{# str }}clicktoview, local_capdmhelpdesk{{/str}}">
                         <div class="status agestatus_{{agestatus}}">
                             <div class="message-icons">
                                 <i id="action_collapse_{{id}}" class="fa fa-close closeicon_{{status}} capdmhelpdesk-action-button" style="display: none;"></i>

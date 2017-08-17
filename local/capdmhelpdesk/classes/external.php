@@ -696,6 +696,42 @@ class external extends external_api {
         $data = new stdClass();
         $messages = array();
 
+        // Get a list of CAPDMHELPDESK categories this user has access to.
+        // If they are a site admin then they see all.
+        $arrCatCoursesList = array();
+        if(array_key_exists($USER->id, get_admins())){
+            $catfilter = ' ';
+
+            // Add a couple of arrays to hold info.
+            $cats = array();
+            $cat = array();
+
+            $categories = $DB->get_records_sql('select cat.id, cat.name as cat_name, cat.cat_userid, cat.cat_order as sortorder from {capdmhelpdesk_cat} cat union select id, fullname as cat_name, 0 as cat_userid, sortorder from {course} c where c.id > 1 order by sortorder');
+
+            // Admins get to see all categories e.g. courses and helpdesk categories
+            foreach($categories as $c){
+                    $arrCourseAdmin['id'] = $c->id;
+                    $arrCourseAdmin['fullname'] = $c->cat_name;
+                    array_push($arrCatCoursesList, $arrCourseAdmin);
+            }
+
+
+        } else {
+            // Limit this CAPDMHELPDESK admin to only view their tickets.
+            $arrCatCourses = capdmhelpdesk_get_user_enrolments_role($USER->id);
+
+            $crsfilter = '';
+            if($arrCatCourses){
+                foreach($arrCatCourses as $c){
+                    $crsfilter .= $c->id.', ';
+                    $arrCourseAdmin['id'] = $c->id;
+                    $arrCourseAdmin['fullname'] = $c->fullname;
+                    array_push($arrCatCoursesList, $arrCourseAdmin);
+                }
+            }
+            $catfilter = ' and r.category in ('.substr($crsfilter, 0, strlen($crsfilter)-2).') ';
+        }
+
         // Get the list of helpdesk requests for the supplied userid.
         $records = $DB->get_records_sql('select r.id, r.userid, r.category, r.subject, cat.cat_name, r.message, r.submitdate, case r.updatedate when 0 then \'NA\' else r.updatedate end
                                         as updatedate, r.updateby, r.status, case r.readflag when 0 then \'unread\' else \'read\' end as readflag,
@@ -709,9 +745,9 @@ class external extends external_api {
                                         ) cat on r.category = cat.id
                                         left join {user} u on r.updateby = u.id
                                         left join (
-                                        select replyto, count(id) as replies from mdl_capdmhelpdesk_replies group by replyto
+                                        select replyto, count(id) as replies from {capdmhelpdesk_replies} group by replyto
                                         ) replies on r.id = replies.replyto
-                                        where (status = 0 or status = -1) order by submitdate desc');
+                                        where (status = 0 or status = -1)'.$catfilter.'order by submitdate desc');
 
         // Get some stats for the helpdesk for the supplied userid.
         $stats = $DB->get_records_sql('select 1 as id, userid, \'open\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where status = 0 group by status union select 2 as id, userid,  \'closed\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where status = 1 group by status union select 3 as id, userid, \'unread\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where readflag = 0 group by readflag');
@@ -776,6 +812,7 @@ class external extends external_api {
                 $message['id'] = $r->id;
                 $message['owner'] = $r->userid;
                 $message['category'] = $r->cat_name;
+                $message['categoryid'] = $r->category;
                 $message['subject'] = $r->subject;
                 $message['message'] = $r->message;
                 $message['status'] = $r->status;
@@ -824,6 +861,7 @@ class external extends external_api {
                             'id' => new external_value(PARAM_INT, 'ID of the message.'),
                             'owner' => new external_value(PARAM_TEXT, 'UserID of the message owner.'),
                             'category' => new external_value(PARAM_TEXT, 'Category this message belongs to.'),
+                            'categoryid' => new external_value(PARAM_TEXT, 'Category ID this message belongs to.'),
                             'subject' => new external_value(PARAM_TEXT, 'Subject of the message.'),
                             'message' => new external_value(PARAM_TEXT, 'Text of the message.'),
                             'status' => new external_value(PARAM_INT, 'Message status.'),

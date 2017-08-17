@@ -50,7 +50,31 @@ class helpdesk_control_admin implements renderable, templatable {
         $arrCatCoursesList = array();
         if(array_key_exists($USER->id, get_admins())){
             $catfilter = ' ';
+
+            // Add a couple of arrays to hold info.
+            $cats = array();
+            $cat = array();
+
+            $categories = $DB->get_records_sql('select cat.id, cat.name as cat_name, cat.cat_userid, cat.cat_order as sortorder from {capdmhelpdesk_cat} cat union select id, fullname as cat_name, 0 as cat_userid, sortorder from {course} c where c.id > 1 order by sortorder');
+
+            // Admins get to see all categories e.g. courses and helpdesk categories
+            foreach($categories as $c){
+                    $arrCourseAdmin['id'] = $c->id;
+                    $arrCourseAdmin['fullname'] = $c->cat_name;
+                    array_push($arrCatCoursesList, $arrCourseAdmin);
+            }
+
+
         } else {
+            // Get the helpdesk categories this user is listed for.
+            $categories = $DB->get_records_sql('select cat.id from {capdmhelpdesk_cat} cat where cat_userid = :userid order by cat_order', array('userid'=>$USER->id));
+
+            // Admins get to see all categories e.g. courses and helpdesk categories
+            $strCats = '';
+            foreach($categories as $c){
+                $strCats .= "'".$c->id."', ";
+            }
+
             // Limit this CAPDMHELPDESK admin to only view their tickets.
             $arrCatCourses = capdmhelpdesk_get_user_enrolments_role($USER->id);
 
@@ -63,7 +87,7 @@ class helpdesk_control_admin implements renderable, templatable {
                     array_push($arrCatCoursesList, $arrCourseAdmin);
                 }
             }
-            $catfilter = ' and r.category in ('.substr($crsfilter, 0, strlen($crsfilter)-2).') ';
+            $catfilter = ' and r.category in ('.$strCats.substr($crsfilter, 0, strlen($crsfilter)-2).') ';
         }
 
         // Get the list of helpdesk requests for the supplied userid.
@@ -79,10 +103,10 @@ class helpdesk_control_admin implements renderable, templatable {
                                         ) cat on r.category = cat.id
                                         left join {user} u on r.updateby = u.id
                                         left join (
-                                        select replyto, count(id) as replies from mdl_capdmhelpdesk_replies group by replyto
+                                        select replyto, count(id) as replies from {capdmhelpdesk_replies} group by replyto
                                         ) replies on r.id = replies.replyto
-                                        where status = 0 or status = -1'.$catfilter.'order by submitdate desc');
-
+                                        where (status = 0 or status = -1)'.$catfilter.'order by submitdate desc');
+echo($catfilter);
         // Get some stats for the helpdesk for the supplied userid.
         $stats = $DB->get_records_sql('select 1 as id, userid, \'open\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where status = 0 group by status union select 2 as id, userid,  \'closed\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where status = 1 group by status union select 3 as id, userid, \'unread\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where readflag = 0 group by readflag');
 
@@ -146,6 +170,7 @@ class helpdesk_control_admin implements renderable, templatable {
                 $message['id'] = $r->id;
                 $message['owner'] = $r->userid;
                 $message['category'] = $r->cat_name;
+                $message['categoryid'] = $r->category;
                 $message['subject'] = $r->subject;
                 $message['message'] = $r->message;
                 $message['status'] = $r->status;

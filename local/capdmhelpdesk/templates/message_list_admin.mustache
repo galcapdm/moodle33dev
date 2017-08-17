@@ -21,50 +21,52 @@
 
     Example context (json):{}
 }}
-<!-- Message list holder -->
+
 <div data-region="capdmhelpdesk-msg-list" id="capdmhelpdesk-msg-list" class="helpdesk-holder">
     {{^messages}}
         <h2 class="light-text">{{# str }}nomessagesyetadmin, local_capdmhelpdesk{{/str}}</h2>
     {{/messages}}
     {{#messages}}
-        <div id="msgid_{{id}}" class="messageholder-main holder_age_{{agestatus}}" title="{{# str }}clicktoview, local_capdmhelpdesk{{/str}}">
+        <div id="msgid_{{id}}" class="messageholder-main holder_age_{{agestatus}} cat_{{categoryid}} category" title="{{# str }}clicktoview, local_capdmhelpdesk{{/str}}">
             <div class="status agestatus_{{agestatus}}">
                 <div class="message-icons">
                     <i id="action_collapse_{{id}}" class="fa fa-close closeicon_{{status}} capdmhelpdesk-action-button" style="display: none;"></i>
                     <i id="action_close_{{id}}" class="fa fa-window-close closestatusicon_{{status}} capdmhelpdesk-action-button" title="{{# str }}closemessagebuttontitle, local_capdmhelpdesk{{/str}}" style="display: none;"></i>
                 </div>
                 <div id="msgid_{{id}}_details" class="messagedetails adminview">
-                    <div class="status-holders status agestatus_{{agestatus}}x">
-                        <div class="status-item status agestatus_{{agestatus}}x">
+                    <div class="status-holders status">
+                        <div class="status-item status">
                             {{# str }}msgage, local_capdmhelpdesk{{/str}}</span><br /><strong>{{age}}</strong>
                         </div>
-                        <div class="status-item status agestatus_{{agestatus}}x">
+                        <div class="status-item status">
                             {{# str }}msgid, local_capdmhelpdesk{{/str}}</span><br /><strong>{{id}}</strong>
                         </div>
-                        <div class="status-item status agestatus_{{agestatus}}x">
+                        <div class="status-item status">
                             {{# str }}labelreplies, local_capdmhelpdesk{{/str}}</span><br /><strong>{{replies}}</strong>
                         </div>
-                        <div class="status-item status agestatus_{{agestatus}}x">
+                        <div class="status-item status">
                             {{# str }}labelsubmitdate, local_capdmhelpdesk{{/str}}</span><br /><strong>{{# str }} submitdate, local_capdmhelpdesk, { "datesubmitted": {{# quote }}{{submitdate}}{{/ quote }} }{{/str}}</strong>
                         </div>
                         {{#status}}
-                        <div class="status-item status agestatus_{{agestatus}}x">
+                        <div class="status-item status">
                             <i class="fa fa-window-close-o fa-lg keepshow"></i><br />{{# str}}autocloselabel, local_capdmhelpdesk{{/str}}
                         </div>
                         {{/status}}
                     </div>
-                    <p><span class="label">{{# str }}categorylabel, local_capdmhelpdesk{{/str}}</span>{{category}}</span></p>
-                    <p><span class="label">{{# str }}labelsubject, local_capdmhelpdesk{{/str}}</span>{{subject}}</p>
+                    <div id="messagedetails_{{id}}" class="messagedetails_content">
+                        <p><span class="label">{{# str }}categorylabel, local_capdmhelpdesk{{/str}}</span>{{category}}</span></p>
+                        <p><span class="label">{{# str }}labelsubject, local_capdmhelpdesk{{/str}}</span>{{subject}}</p>
 
-                {{#updatedate}}
-                    <p class="updated {{readflag}}"><span class="label">{{# str }}labelupdatedate, local_capdmhelpdesk{{/str}}</span>{{# str }} updatedate, local_capdmhelpdesk, { "dateupdated": {{# quote }}{{updatedate}}{{/ quote }}, "fullname": {{# quote }}{{firstname}} {{lastname}}{{/ quote }} }{{/str}}</p>
-                {{/updatedate}}
-                {{^updatedate}}
-                {{/updatedate}}
+                        {{#updatedate}}
+                            <p class="updated {{readflag}}"><span class="label">{{# str }}labelupdatedate, local_capdmhelpdesk{{/str}}</span>{{# str }} updatedate, local_capdmhelpdesk, { "dateupdated": {{# quote }}{{updatedate}}{{/ quote }}, "fullname": {{# quote }}{{firstname}} {{lastname}}{{/ quote }} }{{/str}}</p>
+                        {{/updatedate}}
+                        {{^updatedate}}
+                        {{/updatedate}}
 
-                    <div id="origmessage_{{id}}"  style="display: none;">
-                        <p><span class="label">{{# str }}labelorigmessage, local_capdmhelpdesk{{/str}}</span></p>
-                        <div id="origmessage">{{message}}</div>
+                        <div id="origmessage_{{id}}"  style="display: none;">
+                            <p><span class="label">{{# str }}labelorigmessage, local_capdmhelpdesk{{/str}}</span></p>
+                            <div id="origmessage">{{message}}</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -89,9 +91,10 @@
             <input id="subject" name="subject" type="hidden" value="{{subject}}">
             <input id="notify" name="notify" type="hidden" value="student">
             <div id="autoclose-holder">
-                <input type="checkbox" id="autoclose" name="autoclose" value="-1" checked title="{{# str}}autoclosetitle, local_capdmhelpdesk{{/str}}"><span class="checkboxlabel">{{# str}}autoclose, local_capdmhelpdesk{{/str}}{{{autoclosehelp}}}</span>
+                <input type="checkbox" id="autoclose" name="autoclose" checked value="-1" title="{{# str}}autoclosetitle, local_capdmhelpdesk{{/str}}"><span class="checkboxlabel">{{# str}}autoclose, local_capdmhelpdesk{{/str}}{{{autoclosehelp}}}</span>
             </div>
             <button id="replyformbuttontitle" class="btn btn-primary" title="{{#str}}replyformbuttontitle, local_capdmhelpdesk{{/str}}">{{# str }}replyformbutton, local_capdmhelpdesk{{/str}}</button>
+
         </form>
     </div>
     <div data-region="msgid_{{id}}_replies" id="msgid_{{id}}_replies" class="messageholder-replies" style="display: none;">

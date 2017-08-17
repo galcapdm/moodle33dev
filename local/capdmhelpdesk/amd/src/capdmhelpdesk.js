@@ -9,6 +9,7 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
     var toggleStatus = 0;
     var objHeights = {};
     var collapseID;
+    var objQS = {};
 
     $(document).ready(function()
     // ------------------------
@@ -190,7 +191,8 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
             // Reset collapsed heights if needed!
             capdmhelpdesk_reset_messagedetails_heights();
             // Disable the toggle button and set toggle status to we can track the state.
-            $( '#toggle_categories' ).attr('disabled', true);
+            //$( '#toggle_categories' ).attr( 'disabled', true );
+            $( '.disable_button' ).attr( 'disabled', true );
             toggleStatus = 1;
 
             $( this ).animate({
@@ -253,7 +255,8 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
             // Now show all the other messageholder div's.
             $( '.messageholder-main' ).show(500);
             // Enable the toggle button.
-            $( '#toggle_categories' ).attr('disabled', false);
+            //$( '#toggle_categories' ).attr('disabled', false);
+            $( '.disable_button' ).attr( 'disabled', false );
             toggleStatus = 0;
         }
 
@@ -286,7 +289,7 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
             // Now show all the other messageholder div's.
             $( '.messageholder-main' ).show(500);
             // Enable the toggle button.
-            $( '#toggle_categories' ).attr('disabled', false);
+            $( '.disable_button' ).attr('disabled', false);
             toggleStatus = 0;
         }
 
@@ -370,6 +373,9 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
 
     // Reload this user's messages.
     $( 'body' ).on( 'click', '#reload', function(){
+
+        // Need to set some globals else things will get out of sync
+        toggleStatus = 0;
 
         $( '#capdmhelpdesk-msg-list').fadeTo(300, 0.25, function(){
 
@@ -489,28 +495,48 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
     $( 'body' ).on('click', '.toggle', function(){
 
         var toggleID = $( this ).attr('id').split('_')[1];
+        var toggle0 = $( this ).attr('id').split('_')[0];
 
-        //$( '#'+toggleID+'_detail' ).toggle(300);
 
+    switch(toggleID){
 
-        if( toggleStatus ){
+        case "compact":
+            if( toggleStatus ){
 
-            capdmhelpdesk_reset_messagedetails_heights();
-            // Delete the objHeights object so it does not cause confusion.
-            //objHeights = {};
-            toggleStatus = 0;
-        } else {
-            // Get the original heights and hold them in an object
-            $( 'div.messageholder-main' ).each(function(){
-                objHeights[$( this ).attr('id')] =  $( this ).height();
-            });
-            // Set the toggle status value.
-            toggleStatus = 1;
-            // Hide all the messagedetails_content sections.
-            $( 'div.messageholder-main' ).animate({
-                height: 60
-            }, 300);
-        }
+                capdmhelpdesk_reset_messagedetails_heights();
+                // Delete the objHeights object so it does not cause confusion.
+                //objHeights = {};
+                toggleStatus = 0;
+            } else {
+                // Get the original heights and hold them in an object
+                $( 'div.messageholder-main' ).each(function(){
+                    objHeights[$( this ).attr('id')] =  $( this ).height();
+                });
+                // Set the toggle status value.
+                toggleStatus = 1;
+                // Hide all the messagedetails_content sections.
+                $( 'div.messageholder-main' ).animate({
+                    height: 60
+                }, 300);
+            }
+            break;
+        case "categories":
+            if( $( '#categories_detail' ).is( ':visible' )){
+                $( '#categories_detail' ).fadeOut(300);
+                $( ".category" ).fadeIn(300);
+            } else {
+                $( '#categories_detail' ).fadeIn(300);
+            }
+            break;
+        default:
+            switch(toggle0){
+                case "cat":
+                    $( ".category" ).fadeOut(300);
+                    $( ".cat_"+toggleID ).fadeToggle(300);
+                    console.log(toggleID);
+                    break;
+            }
+    }
 
     });
 
@@ -529,6 +555,21 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
 
     // Functions.
     //--------------------------------------------------------------------------
+
+    // This function takes the URL querystring if there is one and breaks it down to a JS obj for later use.
+    function capdmhelpdesk_get_querystring(){
+
+        var qString = document.URL.split('?')[1];
+        if(qString){
+            var params = qString.split('&');
+            var i;
+            for(i = 0; i < params.length; i++){
+                var k = params[i].split('=')[0];
+                var v = params[i].split('=')[1];
+                objQS[k] = v;
+            }
+        }
+    }
 
     // This function resets the div.messagedetails_content heights.
     function capdmhelpdesk_reset_messagedetails_heights(){
@@ -819,6 +860,16 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
 
     return {
         init: function() {
+
+        //var objQS = {};
+
+            // Parse the querystring if there is one.
+            capdmhelpdesk_get_querystring();
+
+            if(Object.keys(objQS).length > 0 && 'msgid' in objQS){
+                $( '#messagedetails_'+objQS.msgid).trigger('click');
+            }
+
             if( userType === 'student' ){
                 $( '#show_open' ).trigger('click');
                 $( '#show_open' ).focus();
