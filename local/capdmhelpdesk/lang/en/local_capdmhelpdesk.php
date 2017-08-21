@@ -146,7 +146,7 @@ $string['helpdesk_new_message_admin'] = 'Dear Admin/Tutor,
 
 A new helpdesk message at {$a->site} ({$a->sitewww}) has been received and requires your attention.  Please log in and check.
 
-Message ID: {$a->sitewww}?msgid={$a->newmsgid}
+Message ID: {$a->sitewww}/local/capdmhelpdesk/view.php?msgid={$a->newmsgid}
 Message from : {$a->sender}
 Subject : "{$a->subject}"
 
@@ -302,3 +302,4 @@ Regards
 System Administrator';
 // capdmhelpdesk.js strings
 $string['enterreplytext'] = 'Please enter some text in teh box above for your reply.';
+$string['notallowedtoviewid'] = 'The message ID you supplied is invalid or is for a message you are not allowed to access. Please check and try again.';

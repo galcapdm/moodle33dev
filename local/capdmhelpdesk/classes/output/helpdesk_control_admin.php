@@ -106,7 +106,7 @@ class helpdesk_control_admin implements renderable, templatable {
                                         select replyto, count(id) as replies from {capdmhelpdesk_replies} group by replyto
                                         ) replies on r.id = replies.replyto
                                         where (status = 0 or status = -1)'.$catfilter.'order by submitdate desc');
-echo($catfilter);
+
         // Get some stats for the helpdesk for the supplied userid.
         $stats = $DB->get_records_sql('select 1 as id, userid, \'open\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where status = 0 group by status union select 2 as id, userid,  \'closed\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where status = 1 group by status union select 3 as id, userid, \'unread\' as status, count(id) as totalStatus from {capdmhelpdesk_requests} where readflag = 0 group by readflag');
 

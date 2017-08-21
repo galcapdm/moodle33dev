@@ -536,7 +536,7 @@ class external extends external_api {
      * @throws  moodle_exception
      */
     public static function reload_messages($userid = 0) {
-        global $DB;
+        global $DB, $OUTPUT;
 
         // Build an array for any warnings.
         $warnings = array();
@@ -618,6 +618,7 @@ class external extends external_api {
                             'status' => new external_value(PARAM_TEXT, 'Message status.'),
                             'readflag' => new external_value(PARAM_TEXT, 'Readflag status.'),
                             'params' => new external_value(PARAM_TEXT, 'Parameters with this message.'),
+                            'autoclosehelp' => new external_value(PARAM_TEXT, 'HTML for the autoclose help.'),
                         )
                     )
                 ),
@@ -688,7 +689,9 @@ class external extends external_api {
      * @throws  moodle_exception
      */
     public static function reload_messages_admin($userid) {
-        global $DB, $USER;
+        global $DB, $USER, $OUTPUT, $PAGE;
+
+        $PAGE->set_context(context_system::instance());
 
         $userid = $USER->id;
 
@@ -830,6 +833,7 @@ class external extends external_api {
                 } else {
                     $message['updatedate'] = '';
                 }
+                $message['autoclosehelp'] = $OUTPUT->help_icon('autoclose', 'local_capdmhelpdesk');
                 array_push($messages, $message);
                 // Need to unset the array as not always the same values being set.
                 // If you don't unset then the next record keeps the last value.
@@ -874,6 +878,7 @@ class external extends external_api {
                             'agestatus' => new external_value(PARAM_INT, 'Age of the message.'),
                             'userid' => new external_value(PARAM_TEXT, 'Userid of the user posting the message.'),
                             'updatedate' => new external_value(PARAM_TEXT, 'Date message was updated.'),
+                            'autoclosehelp' => new external_value(PARAM_RAW, 'Help icon for autoclose.'),
                         )
                     )
                 ),
