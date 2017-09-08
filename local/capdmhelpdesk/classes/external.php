@@ -536,7 +536,9 @@ class external extends external_api {
      * @throws  moodle_exception
      */
     public static function reload_messages($userid = 0) {
-        global $DB, $OUTPUT;
+        global $DB, $OUTPUT, $PAGE;
+
+        $PAGE->set_context(context_system::instance());
 
         // Build an array for any warnings.
         $warnings = array();
@@ -588,6 +590,7 @@ class external extends external_api {
                 'params' => $m->params,
                 'firstname' => $m->firstname,
                 'lastname' => $m->lastname,
+                'autoclosehelp' => $OUTPUT->help_icon('autoclose', 'local_capdmhelpdesk'),
             );
         }
 
@@ -618,7 +621,7 @@ class external extends external_api {
                             'status' => new external_value(PARAM_TEXT, 'Message status.'),
                             'readflag' => new external_value(PARAM_TEXT, 'Readflag status.'),
                             'params' => new external_value(PARAM_TEXT, 'Parameters with this message.'),
-                            'autoclosehelp' => new external_value(PARAM_TEXT, 'HTML for the autoclose help.'),
+                            'autoclosehelp' => new external_value(PARAM_RAW, 'HTML for the autoclose help.'),
                         )
                     )
                 ),
@@ -631,7 +634,118 @@ class external extends external_api {
      *  Reloead messages - END.
      */
 
+    /*  ############################################################################################
+     *  Search messages - START.
+     *  ############################################################################################
+     */
 
+    /**
+     * Describes the parameters for search.
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.1
+     */
+    public static function search_parameters() {
+        return new external_function_parameters (
+            array(
+                'param' => new external_value(PARAM_TEXT, 'The search string'),
+            )
+        );
+    }
+
+    /**
+     * Returns the list of messages for supplied search string.
+     * This is where most of the data logic is performed.
+     *
+     * @param   text     $param         String of text to search with.
+     * @return  array                   Array containing warnings and the found records.
+     * @since   Moodle 3.1
+     * @throws  moodle_exception
+     */
+    public static function search($param = '') {
+        global $DB, $OUTPUT, $PAGE;
+
+        $PAGE->set_context(context_system::instance());
+
+        // Build an array for any warnings.
+        $warnings = array();
+
+        // Build an array of the input parameters so they can be checked using
+        // search_parameters to ensure they are of the correct type.
+        $params = array(
+            'param' => $param,
+        );
+        $params = self::validate_parameters(self::search_parameters(), $params);
+
+        // Build an array to hold the itmes to be returned to the template.
+        $result = array();
+        $result['messages'] = array();      // This is an array to hold the replies records.  An array of arrays!
+        $result['warnings'] = $warnings;    // Any warnings issued.
+        $result['success'] = 0;             // Status if records found. 0 = no records found, 1 = records found.
+
+        $messages = $DB->get_records_sql('select r.id, r.category, r.subject, from_unixtime(submitdate) as submitdate, case updatedate when 0  then \'--\' else from_unixtime(updatedate) end as updatedate, u.firstname, u.lastname, u.email from {capdmhelpdesk_requests} r join {user} u on r.userid = u.id where (lastname like :par1) or (firstname like :par2) or (r.id = :par3)', array('par1'=>$params['param'], 'par2'=>$params['param'], 'par3'=>$params['param']));
+
+        if(!$messages){
+            $result['results'][] = array(
+                'id' => 0,
+                'userid' => '',
+                'subject' => '',
+                'firstname' => '',
+                'lastname' => '',
+                'submitdate' => '',
+                'updatedate' => '',
+            );
+        } else {
+            $result['success'] = 1;
+            foreach ($messages as $m) {
+                $result['results'][] = array(
+                    'id' => $m->id,
+                    'userid' => $m->userid,
+                    'subject' => $m->subject,
+                    'firstname' => $m->firstname,
+                    'lastname' => $m->lastname,
+                    'submitdate' => $m->submitdate,
+                    'updatedate' => $m->updatedate,
+                );
+            }
+        }
+
+        // Now return the result array of values.
+        return $result;
+    }
+
+    /**
+     * This checks the data type of the returned
+     * values to make sure they are what is expected.
+     *
+     * @return external_single_structure
+     * @since Moodle 3.1
+     */
+    public static function search_returns() {
+        return new external_single_structure(
+            array(
+                'results' => new external_multiple_structure(
+                    new external_single_structure(
+                        array(
+                            'id' => new external_value(PARAM_INT, 'ID of the message.'),
+                            'userid' => new external_value(PARAM_TEXT, 'Userid of the user posting the message.'),
+                            'subject' => new external_value(PARAM_TEXT, 'Subject of the message.'),
+                            'firstname' => new external_value(PARAM_TEXT, 'User firstname.'),
+                            'lastname' => new external_value(PARAM_TEXT, 'User lastname.'),
+                            'submitdate' => new external_value(PARAM_TEXT, 'Date submitted.'),
+                            'updatedate' => new external_value(PARAM_TEXT, 'Date last updated.'),
+                        )
+                    )
+                ),
+                'warnings' => new external_warnings(),
+                'success' => new external_value(PARAM_INT, 'Value indicating search success - 0 = no records found.'),
+            )
+        );
+    }
+
+    /*
+     *  Search messages - END.
+     */
 
 
 

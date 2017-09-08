@@ -366,10 +366,6 @@ span.icon.fa.fa-times.form-control-feedback {
     color: darkred;
 }
 
-div#capdmhelpdesk-control-buttons {
-    margin: 1em 0;
-}
-
 div.latestmsg {
     background-color: rgba(163, 227, 98, 0.8) !important;
 }
@@ -504,6 +500,7 @@ div#key button.agestatus_25 {
 div#capdmhelpdesk-control-buttons {
     margin: 0 0 1em 0;
     float: left;
+    z-index: 100;
 }
 
 div#capdmhelpdesk-control-buttons button {
@@ -534,4 +531,64 @@ input#autoclose {
     margin-top:10px;
     position:relative;
     top: 5px;
+}
+#newmessageprompt {
+    opacity: 0;
+}
+div.tooltips {
+  position: relative;
+  display: inline;
+  left: 80px;
+  top: -10px;
+}
+div.tooltips span {
+  position: absolute;
+  color: #fff;
+  background: rgba(0,172,223,1);
+  height: 35px;
+  line-height: 35px;
+  text-align: center;
+  border-radius: 7px;
+  font-size: 14px;
+  letter-spacing: 1px;
+  width: 225px;
+}
+div.tooltips span:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -8px;
+  width: 0; height: 0;
+  border-right: 8px solid rgba(0,172,223,1);;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+div#searchboxholder {
+    display: none;
+    float: left;
+    clear: both;
+    margin: 0 0 1em 0;
+}
+
+input#searchbox {
+    width: 350px;
+}
+div#searchresultsholder {
+    display: none;
+    background-color: aliceblue;
+    padding: 10px 15px;
+    width: 100%;
+    float: left;
+    clear: both;
+    margin: 0 0 1em 0;
+}
+
+.search-item {
+    margin: 10px 0 20px 0;
+    border-bottom: 1px solid #31708f;
+}
+
+span.search-item-label {
+    margin: 0 0.5em 0 0 ;
 }

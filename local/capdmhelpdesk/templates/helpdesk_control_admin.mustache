@@ -44,12 +44,35 @@
 
             <div id="capdmhelpdesk-control-buttons">
                 <button id="reload" class="btn btn-default helpdesk-control-button disable_button" title="{{# str }}reload, local_capdmhelpdesk{{/str}}"><i class="fa fa-repeat"></i></button>
+                <button id="search" class="btn btn-default helpdesk-control-button disable_button" title="{{# str }}searchforamessage, local_capdmhelpdesk{{/str}}"><i class="fa fa-search"></i></button>
                 <button id="toggle_compact" class="btn btn-default toggle  disable_button" title="{{# str}}togglecompact, local_capdmhelpdesk{{/str}}"><i class="fa fa-eye-slash"></i></button>
                 <button id="toggle_categories" class="btn btn-default toggle disable_button" title="{{# str}}togglecatstitle, local_capdmhelpdesk{{/str}}"><i class="fa fa-list-ul"></i></button>
                 <div id="categories_detail" style="display: none;">
                 {{#admincategories}}
                     <button id="cat_{{id}}" class="btn btn-default toggle disable_button" title="{{# str}}catviewonly, local_capdmhelpdesk{{/str}}">{{fullname}}</button>
                 {{/admincategories}}
+                </div>
+            </div>
+
+            <div id="searchboxholder">
+                <input id="searchbox" name="searchbox" placeholder="{{# str}}searchholdertxt, local_capdmhelpdesk{{/str}}" title="{{# str}}searchtitle, local_capdmhelpdesk{{/str}}" class="form-control" type="text">
+            </div>
+
+            <div id="searchresultsholder">
+                <div data-region="searchresults" id="searchresults" class="searchresults">
+                    {{^success}}
+                        <p class="noreplies">{{# str}}searchnotfound, local_capdmhelpdesk{{/str}}</p>
+                    {{/success}}
+                    {{#success}}
+                        {{^results}}
+                            <p class="noreplies">{{# str}}noreplies, local_capdmhelpdesk{{/str}}</p>
+                        {{/results}}
+                        {{#results}}
+                        <div id="search-msgid_{{id}}" class="search-item">
+                            <p><a href="?msgid={{id}}">({{id}}) - {{ firstname }} {{ lastname }} - {{ subject }}</a><br /><span class="search-item-label">{{# str}}labelsubmitdate, local_capdmhelpdesk{{/str}}</span> {{submitdate}} <span class="search-item-label"><br />{{# str}}labelupdatedate, local_capdmhelpdesk{{/str}}</span> {{updatedate}}</p>
+                        </div>
+                        {{/results}}
+                    {{/success}}
                 </div>
             </div>
 

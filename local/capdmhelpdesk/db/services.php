@@ -77,6 +77,15 @@ $functions = array(
         'type'        => 'read',
         'capabilities'=> '',
         'ajax'        => 'true',
+    ),
+    'local_capdmhelpdesk_search' => array(
+        'classname'   => 'local_capdmhelpdesk\external',
+        'methodname'  => 'search',
+        'classpath'   => '',
+        'description' => 'Do a search based on the entered criteria and display the results',
+        'type'        => 'read',
+        'capabilities'=> '',
+        'ajax'        => 'true',
     )
 );
 

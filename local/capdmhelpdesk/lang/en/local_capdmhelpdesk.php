@@ -303,3 +303,10 @@ System Administrator';
 // capdmhelpdesk.js strings
 $string['enterreplytext'] = 'Please enter some text in teh box above for your reply.';
 $string['notallowedtoviewid'] = 'The message ID you supplied is invalid or is for a message you are not allowed to access. Please check and try again.';
+$string['tour_newmessage_title, local_capdmhelpdesk'] = 'New request';
+$string['tour_newmessage_content, local_capdmhelpdesk'] = 'Click here to get the new message form.';
+$string['newmesssagetooltip'] = 'Click to add a new message.';
+$string['searchforamessage'] = 'Seach for a message by ID or users name or email';
+$string['searchtitle'] = 'Enter a message ID, first name, lastname or email in the search box to find messages from that user.';
+$string['searchholdertxt'] = 'Search&hellip;';
+$string['searchnotfound'] = 'Nothing found. Please amend your search and try again.';

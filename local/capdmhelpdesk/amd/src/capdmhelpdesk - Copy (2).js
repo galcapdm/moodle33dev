@@ -10,9 +10,6 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
     var objHeights = {};
     var collapseID;
     var objQS = {};
-    var searchBool = 1;
-    var searchY = 50;
-    var lastTime = 0;
 
     $(document).ready(function()
     // ------------------------
@@ -375,7 +372,7 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
     // Reload this user's messages.
     $( 'body' ).on( 'click', '#reload', function(){
 
-        // Need to set some globals else things will get out of sync.
+        // Need to set some globals else things will get out of sync
         toggleStatus = 0;
 
         $( '#capdmhelpdesk-msg-list').fadeTo(300, 0.25, function(){
@@ -386,8 +383,6 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
 
             switch(userType){
                 case 'admin':
-                    // Clear any search results first.
-                    capdmhelpdesk_clear_search();
                     var promises = ajax.call([
                         { methodname: 'local_capdmhelpdesk_reload_messages_admin', args:{ userid: userID } }
                     ]);
@@ -528,69 +523,12 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
                     case "cat":
                         $( ".category" ).fadeOut(300);
                         $( ".cat_"+toggleID ).fadeToggle(300);
+                        console.log(toggleID);
                         break;
                 }
         }
 
     });
-
-    // Toggle the search box
-    $( 'body' ).on('click', '#search', function(){
-        if($( '#searchboxholder' ).hasClass('open')){
-            capdmhelpdesk_clear_search();
-            $( '#searchboxholder' ).slideUp(300);
-            $( '#searchboxholder' ).removeClass('open');
-            $( '#searchresultsholder' ).slideUp(300);
-        } else {
-            $( '#searchboxholder' ).slideDown(300);
-            $( '#searchboxholder' ).addClass('open');
-            $( '#searchresultsholder' ).slideDown(300);
-            $( '#searchbox' ).focus();
-        }
-    });
-
-    // Ajax live search
-    $( 'body' ).on('keyup', '#searchbox', function(){
-// galgalajax
-        var d = new Date();
-        var n = d.getTime();
-        var searchStr = $( '#searchbox' ).val();
-
-        // Stop any pending searches.
-        $( this ).clearQueue();
-
-        var promises = ajax.call([
-                    { methodname: 'local_capdmhelpdesk_search', args:{ param: searchStr} }
-                ]);
-        promises[0].done(function(data) {
-            // We have the data - lets re-render the template with it.
-            templates.render('local_capdmhelpdesk/search_results', data).done(function(html, js) {
-                $('[data-region="searchresults"]').replaceWith(html);
-
-                var noResults = $( '.search-item').length;
-                var totalY = 0;
-                var baseY = 0;
-                var padding = $( '#searchresults' ).css('paddingTop') + $( '#searchresults' ).css('paddingBottom');
-
-                $( '.search-item' ).each(function(i){
-                    totalY += $( this ).outerHeight();
-                    if(baseY == 0){
-                        baseY = totalY;
-                    }
-                });
-
-                setTimeout(function(){ $( '#searchresults' ).show(300); }, 500);
-
-
-                //var newSearchBoxY = $( '#searchresults' ).height();
-                //$( '#searchboxholder' ).animate({ height: newSearchBoxY + baseY + padding }, 200);
-
-                // And execute any JS that was in the template.
-                templates.runTemplateJS(js);
-            }).fail(notification.exception);
-            }).fail(notification.exception);
-    });
-
 
     $( 'body' ).on('click', '#test', function(){
 
@@ -612,16 +550,6 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
     // Functions go here
     //
     // #########################################################################
-
-    // This function clears the search results.
-    function capdmhelpdesk_clear_search(){
-
-        $( '#searchbox' ).val('');
-        $.when(str.get_string('searchtitle', 'local_capdmhelpdesk')).done(function(localizedEditString) {
-            $( '#searchresults' ).html(localizedEditString);
-        });
-    }
-
 
     // This function takes the URL querystring if there is one and breaks it down to a JS obj for later use.
     function capdmhelpdesk_get_querystring(){
@@ -772,6 +700,7 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
     *	@param direction    = show (1) or hide (0) the new message form.
     *	@param item         = whether this is the new message or reply form.
     *
+    *	@return array(obj)
     */
     function toggleNewForm(direction, item){
 
@@ -790,13 +719,7 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
         }
     }
 
-    /**
-    *	Function to set and display a helpdesk feedback message
-    *
-    *	@param msg    = Text of the message to show.
-    *	@param opt    = -1 hides the message box otherwise it shows.
-    *
-    */
+    // Function to set and display a helpdesk feedback message
     function capdmhelpdesk_alert_msg(msg, opt){
 
         $('#capdmhelpdesk-feedback').hide(500);
@@ -809,6 +732,130 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
                     $('#capdmhelpdesk-feedback').html(msg);
                     $('#capdmhelpdesk-feedback').show(500);
         }
+    }
+
+    function capdmhelpdeskio(whatType, params){
+
+            params = JSON.stringify(params);
+
+            // to keep the ajax io simple then will separate the differnt types of call
+            switch(whatType){
+
+                    case 'new':
+                            $.ajax({type: 'POST',
+                                    data: {op:'helpdeskmsg', type: whatType, parameters: params},
+                                    url: "ajax.php",
+                                    success: function(result){
+                                            capdmhelpdesk_alert_msg('Thank you. Your message has been saved and course or site administrators have been notified and will be in touch soon. Please reload this page to view your new request in the helpdesk request list.', 0);
+                                    },
+                                    failure: function(){capdmhelpdesk_alert_msg('problem inserting a record'); refresh = false;
+                                            console.log(result);
+                                            console.log('this is from the capdmuser jquery code in the error section of a new helpdesk ticket FAILURE');
+                                    },
+                                    error: function(result){
+                                            console.log(result);
+                                            console.log('this is from the capdmuser jquery code in the error section of a new helpdesk ticket ERROR');
+                                    }
+                            });
+                            break;
+                    case 'close':
+                            $.ajax({type: 'POST',
+                                    data: {op:'helpdeskmsg', type: whatType, parameters: params},
+                                    url: "database2.php",
+                                    success: function(result){
+                                            capdmhelpdesk_alert_msg('Message closed', 0);
+                                            $('#capdmhelpdesk_message_holder').slideToggle(500);
+                                            //obj = JSON.parse(params);
+                                            //$('#help_msg_'+obj.msgid).remove();
+                                            // amend the message count indicator
+                                            //newMsgCount = $('#admin_msg_count').attr('count') - 1;
+                                            //$('#admin_msg_count').attr('count', newMsgCount);
+                                            //$('#admin_msg_count').html('('+newMsgCount+')');
+
+                                            refresh = true; iores = result;
+                                            },
+                                    failure: function(){capdmhelpdesk_alert_msg('problem inserting a record'); refresh = false;}
+                            });
+                            break;
+
+                    case 'reply':
+                            $.ajax({type: 'POST',
+                                    data: {op:'helpdeskmsg', type: whatType, parameters: params},
+                                    url: "database2.php",
+                                    success: function(result){
+                                            capdmhelpdesk_alert_msg('Thank you.  Your reply has been received and where necessary course or site administrators have been notified.', 0);
+                                            var arrPars = $.parseJSON(params);
+                                            // divide by 100 as it gets multiplied by 100 in the function to handle dates out of MySQL an dPHP
+                                            var submitDate = Date.now()/1000;
+                                            $('#capdmhelpdesk_message_replies').prepend('<p class="alert bg-danger"><span class="capdmhelpdesk_msgdate smalltext">'+capdmhelpdesk_dateformat(submitDate, 1, 1)+'</span>'+arrPars['msg']+'<br /></p>');
+                                            $('#capdmhelpdesk_reply').prop('disabled', false);
+                                            $('#capdmhelpdesk_reply').html('Submit');
+                                            $('#capdmhelpdesk_replycomment').val('');
+                                            $('#capdmhelpdesk_message_reply').slideToggle(500);
+                                            refresh = true;
+                                            iores = result},
+                                    failure: function(){capdmhelpdesk_alert_msg('problem inserting a record'); refresh = false;}
+                            });
+                            break;
+                    case 'ticket':
+                            $.ajax({type: 'POST',
+                                    data: {op:'helpdeskmsg', type: whatType, parameters: params},
+                                    url: "database2.php",
+                                    success: function(result){
+//						var arrReply = $.parseJSON(result);
+                                            var rec = $.parseJSON(result.data);
+                                            var origUser = rec['firstname']+' '+rec['lastname'];
+                                            var updateBy = rec['updatedbyname'];
+                                            var subDate = rec['formatted_submitdate'];    //capdmhelpdesk_dateformat(rec['submitdate'], 1, 1);
+                                            var upDate = rec['formatted_updatedate'];     //capdmhelpdesk_dateformat(rec['updatedate'], 1, 1);
+                                            var cat = rec['category'];
+                                            var recStatus = rec['statusdesc'];
+
+                                            $('#capdmhelpdesk_message_cat').html(rec.fullname);
+                                            $('#capdmhelpdesk_message_subject').html(rec.subject);
+                                            $('#capdmhelpdesk_message_details').html('<p class="smalltext">User - '+origUser+'</p><p class="smalltext">Date submitted - '+subDate+'</p><p class="smalltext">Date last updated - '+upDate+' by <strong>'+updateBy+'</strong></p><p class="smalltext status_'+rec['status']+'">Status - '+recStatus+'</p>');
+                                            $('#capdmhelpdesk_message_msg').html('<p>'+rec.message+'</p>');
+                                            $('#btn-capdmhelpdesk_message_close').attr('msgID', rec.id);
+                                            $('#capdmhelpdesk_orig_userid').val(rec.userid);
+                                            $('#capdmhelpdesk_cat_value').val(rec.category);
+                                    },
+                                    failure: function(){capdmhelpdesk_alert_msg('problem getting a record'); refresh = false;}
+                            });
+                            break;
+                    case 'replies':
+                            var result = '';
+                            $.ajax({type: 'POST',
+                                    data: {op:'helpdeskmsg', type: whatType, parameters: params},
+                                    url: "database2.php",
+                                    success: function(result){
+                                            $('#capdmhelpdesk_message_replies').children('p').remove();
+//                                                var arrReply = $.parseJSON(result);
+//                                                var subDate = capdmhelpdesk_dateformat(rec['submitdate'], 0, 0);
+//                                                var upDate = capdmhelpdesk_dateformat(rec['updatedate'], 1, 0);
+
+                                            if(result.data.length > 2){
+                                                    $.each($.parseJSON(result.data), function(i, o){
+                                                            $('#capdmhelpdesk_message_replies').prepend('<p class="alert bg-info"><span class="capdmhelpdesk_msgdate smalltext">'+capdmhelpdesk_dateformat(o.submitdate, 1, 1)+' by '+o.firstname+' '+o.lastname+'</span>'+o.message+'</p>');
+                                                    });
+                                            } else {
+                                                    $('#capdmhelpdesk_message_replies').prepend('<p class="alert bg-info">No replies</p>');
+                                            }
+                                    },
+                                    complete: function(){capdmhelpdesk_wait(0)},
+                                    failure: function(){capdmhelpdesk_alert_msg('problem getting a record'); refresh = false;}
+                            });
+                            break;
+                    case 'unread':
+                             var result = '';
+                            $.ajax({type: 'POST',
+                                    data: {op:'helpdeskmsg', type: whatType, parameters: params},
+                                    url: "database2.php",
+                                    success: function(result){},
+                                    complete: function(){},
+                                    failure: function(){capdmhelpdesk_alert_msg('problem getting a record'); refresh = false;}
+                            });
+                            break;
+            }
     }
 
     return {
@@ -825,23 +872,6 @@ define(['core/ajax', 'core/templates', 'core/notification', 'core/str'], functio
                         capdmhelpdesk_alert_msg(localizedEditString, 0);
                     });
                 }
-            }
-
-            // If there are helpdesk messages then hide the new message click prompt
-            // otherwise show this as a tooltip.
-            if( $( '.messageholder-main' ).length > 0 ){
-                $( '#newmessageprompt' ).addClass('hidden');
-            } else {
-                // Animate the tooltip
-                $( '#newmessageprompt' ).animate({
-                    left: "-=30",
-                    opacity: 1
-                }, 450, function(){
-                    // Now fade out after a pause.
-                    setTimeout(function(){
-                        $( '#newmessageprompt').fadeOut(1000);
-                    }, 2000);
-                });
             }
 
             if( userType === 'student' ){
