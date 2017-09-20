@@ -201,7 +201,7 @@ class MYPDF extends TCPDF {
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
-    // set auto page breaks
+    // set auto page breaksfone
     $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
     // set image scale factor
@@ -218,9 +218,14 @@ if($_GET['checksum'] == md5($_GET['dwb'].'this is unguessible')){
     $userid = $_GET['dwb'];
 
     // Query is the same as in capdmdwb and capdmcert with the addition of the first two fields wrap.title and wrap.user_level being added to the list of fields returned
-    $strSQL = "SELECT act.id, wrap.title AS topic_title, wrap.user_level, wrap.topic_no, wrap.session_no, act.course, wrap.mod_id,
-               wrap.wrapper_id, act.activity_id, act.data_type, act.qpart, wrap.title, wrap.preamble, wrap.run_order, resp.data_id,
-               coalesce(resp.data_value, 'not yet answered') as data_value, resp.data_option, resp.data_explanation, resp.response_include
+    $strSQL = "SELECT case when act.data_type = 'mrq' then concat('mrq-', act.id, '-', data_value) else act.id end as id, wrap.title AS topic_title, wrap.user_level, wrap.topic_no, wrap.session_no, act.course, wrap.mod_id,
+               wrap.wrapper_id, act.activity_id, act.data_type, act.qpart, wrap.title, wrap.preamble, wrap.run_order, coalesce(resp.data_id, act.id) as data_id,
+               case data_type when 'mansopt' then
+               coalesce(resp.data_value, -999)
+               else
+               coalesce(resp.data_value, 'Not yet answered')
+               end as data_value, coalesce(resp.data_option, act.id) as data_option,
+               coalesce(resp.data_explanation, 'not yet answered') as data_explanation, resp.response_include
                FROM {capdmdwb_activity} act
                LEFT JOIN (SELECT course, data_id, data_value, data_option, data_explanation, response_include
                           FROM {capdmdwb_response}
@@ -254,6 +259,9 @@ if($_GET['checksum'] == md5($_GET['dwb'].'this is unguessible')){
     $frontpageprint = get_config('capdmdwb', 'frontpageprintdate');
     $footerprint = get_config('capdmdwb', 'footerprintdate');
     $frontpageinfobox = get_config('capdmdwb', 'frontpageinfobox');
+    $selectimg = get_config('capdmdwb', 'selectimg');
+    $checkimg = get_config('capdmdwb', 'checkimg');
+    $radioimg = get_config('capdmdwb', 'radioimg');
 
     if($headerimg != ''){
         $pdf->Image($CFG->dataroot.'/pix/mod/capdmdwb/'.$headerimg, $x=0, $y=0, $align='M');
@@ -261,6 +269,9 @@ if($_GET['checksum'] == md5($_GET['dwb'].'this is unguessible')){
     if($frontpageimg != ''){
         $pdf->Image($CFG->dataroot.'/pix/mod/capdmdwb/'.$frontpageimg, $x=0, $y=85, $align='M');
     }
+    $selectImg = '<img src="pix/icons/select_icon.png">';
+    $checkImg = '<img src="pix/icons/checkbox_icon.png">';
+    $radioImg = '<img src="pix/icons/checkbox_icon.png">';
 
     if($frontpageinfobox){
         $html = '<style type="text/css">';
@@ -311,6 +322,17 @@ if($_GET['checksum'] == md5($_GET['dwb'].'this is unguessible')){
 
     // Track the topic number so we know when to display a topic title or not
     $last_topicno = -9999999;
+    // MRQ types are difficult to handle as no idea if the next record is part of the mrq
+    // need to track data_type and then act accordingly to add top and tail on the html
+    // when an MRQ starts and stops!
+    $lastType = '';
+    $last_wrapperid = '';
+    $last_preamble = '';
+    $last_qpart = '';
+    $mrq = '';
+    $mrqHead = '<table cellpadding="5">';
+    $mrqFoot = '</table><br /><br />';
+
 
     $html = '<style type="text/css">';
     // Pick up custom CSS from the site plugin config for CAPDMDWB
@@ -322,29 +344,40 @@ if($_GET['checksum'] == md5($_GET['dwb'].'this is unguessible')){
 
         $html .= '<table class="dwbitem" cellpadding="5">';
 
-        if($d->topic_no != $last_topicno){
-            $html .= '<tr>';
-                $html .= '<td colspan="2" class="topictitle">'.nl2br(trim($d->topic_title)).'</td>';
-            $html .= '</tr>';
-            $last_topicno = $d->topic_no;
+        if($lastType != 'mrq' && $d->data_type != 'select'){
+            if($d->wrapper_id != $last_wrapperid){
+                $html .= '<tr>';
+                    $html .= '<td colspan="2" class="topictitle">'.nl2br(trim($d->topic_title)).'</td>';
+                $html .= '</tr>';
+            }
+            if($d->preamble != $last_preamble){
+                $html .= '<tr>';
+                $html .= '<td width="5%">&nbsp;</td>';
+                $html .= '<td width="95%" class="dwbcontent preamble">'.nl2br(trim($d->preamble)).'</td>';
+                $html .= '</tr>';
+            }
+            if($d->qpart != $last_qpart && $d->data_type != 'select'){
+                $html .= '<tr>';
+                $html .= '<td width="5%">&nbsp;</td>';
+                $html .= '<td width="95%" class="dwbcontent qpart">'.nl2br(trim($d->qpart)).'</td>';
+                $html .= '</tr>';
+            }
+            $html .= '</table>';
         }
-        if($d->preamble != ''){
-            $html .= '<tr>';
-            $html .= '<td width="5%">&nbsp;</td>';
-            $html .= '<td width="95%" class="dwbcontent preamble">'.nl2br(trim($d->preamble)).'</td>';
-            $html .= '</tr>';
+
+        if($lastType == 'mrq' && $d->data_type != 'mrq'){
+            $html .= $mrqHead.$mrq.$mrqFoot;
         }
-        if($d->qpart != ''){
-            $html .= '<tr>';
-            $html .= '<td width="5%">&nbsp;</td>';
-            $html .= '<td width="95%" class="dwbcontent qpart">'.nl2br(trim($d->qpart)).'</td>';
-            $html .= '</tr>';
-        }
-        $html .= '</table>';
 
         switch($d->data_type){
-            case 'textarea':
             case 'mrq':
+                $mrq .= '<tr>';
+                $mrq .= '<td width="5%">&nbsp;</td>';
+//                $mrq .= '<td width="95%" class="dwbcontent datavalue"><input type="checkbox" checked disabled name="'.$d->data_id.'" value="'.$d->data_value.'"/> '.$d->data_explanation.$d->preamble.'</td>';
+                $mrq .= '<td width="95%" class="dwbcontent datavalue">'.$checkImg.$d->data_explanation.'</td>';
+                $mrq .= '</tr>';
+                break;
+            case 'textarea':
                 $html .= '<table cellpadding="5">';
                 $html .= '<tr>';
                 $html .= '<td width="5%">&nbsp;</td>';
@@ -353,24 +386,39 @@ if($_GET['checksum'] == md5($_GET['dwb'].'this is unguessible')){
                 $html .= '</table>';
                 $html .= '<br /><br />';
                 break;
-            case 'mansopt':
-            case 'mcq':
-                //$mansopt = html_writer::tag('span', array('class'=>'dwb-radio-icon'));
-                $mansopt = '<input type="radio" disabled name="'.$d->data_id.'" value="'.$d->data_value.'" checked="checked"/> '.$d->data_explanation;
+            case 'highlight':
                 $html .= '<table cellpadding="5">';
                 $html .= '<tr>';
                 $html .= '<td width="5%">&nbsp;</td>';
-                $html .= '<td width="95%" class="dwbcontent datavalue">'.$mansopt.'</td>';
+                $html .= '<td width="95%" class="dwbcontent datavalue">'.trim($d->data_value).'</td>';
+                $html .= '</tr>';
+                $html .= '</table>';
+                $html .= '<br /><br />';
+                break;
+            case 'mansopt':
+            case 'mcq':
+                $radioImg = '<img src="pix/icons/radio_icon.png">';
+                $html .= '<table cellpadding="5">';
+                $html .= '<tr>';
+                $html .= '<td width="5%">&nbsp;</td>';
+                $html .= '<td width="95%" class="dwbcontent datavalue">'.$radioImg.'&nbsp;'.$d->data_explanation.'</td>';
                 $html .= '</tr>';
                 $html .= '</table>';
                 $html .= '<br /><br />';
                 break;
             case 'select':
-                $select = '<select><option value="'.$d->data_value.'">'.$d->data_explanation.'</option></select>';
                 $html .= '<table cellpadding="5">';
                 $html .= '<tr>';
                 $html .= '<td width="5%">&nbsp;</td>';
-                $html .= '<td width="95%" class="dwbcontent datavalue">'.$select.'</td>';
+                $html .= '<td width="95%" class="dwbcontent qpart">'.nl2br(trim($d->qpart)).'</td>';
+                $html .= '</tr>';
+                $html .= '<tr>';
+                $html .= '<td width="5%">&nbsp;</td>';
+                $html .= '<td width="95%" class="dwbcontent preamble">'.nl2br(trim($d->preamble)).'</td>';
+                $html .= '</tr>';
+                $html .= '<tr>';
+                $html .= '<td width="5%">&nbsp;</td>';
+                $html .= '<td width="95%" class="dwbcontent datavalue select">'.$selectImg.'&nbsp;'.$d->data_option.'</td>';
                 $html .= '</tr>';
                 $html .= '</table>';
                 $html .= '<br /><br />';
@@ -379,6 +427,10 @@ if($_GET['checksum'] == md5($_GET['dwb'].'this is unguessible')){
                 $html .= html_writer::tag('p', $d->data_value, array('class'=>'datavalue'));
                 break;
         }
+        $lastType = $d->data_type;
+        $last_wrapperid = $d->wrapper_id;
+        $last_preamble = $d->preamble;
+        $last_qpart = $d->qpart;
     }
 
     // Indicate this is the end of the workbook
@@ -392,7 +444,7 @@ if($_GET['checksum'] == md5($_GET['dwb'].'this is unguessible')){
     // Close the dwb-output div
     $html .= html_writer::end_tag('div');
 
-    $pdf->writeHTML($html, true, false, true, false, '');
+    $pdf->writeHTML($html, true, false, true, false,'');
 
     // ######################################
     // Follow on pages - END

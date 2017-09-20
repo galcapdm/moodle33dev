@@ -35,7 +35,7 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configtext('capdmdwb/errorimg',
         get_string('errorimg', 'capdmdwb'), get_string('errorimgdesc', 'capdmdwb'), '', PARAM_TEXT, 80));
-    
+
     $settings->add(new admin_setting_configcheckbox('capdmdwb/frontpageprintdate',
         get_string('frontpageprintdate', 'capdmdwb'), get_string('frontpageprintdatedesc', 'capdmdwb'), 1));
 
@@ -44,7 +44,6 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configcheckbox('capdmdwb/frontpageinfobox',
         get_string('frontpageinfobox', 'capdmdwb'), get_string('frontpageinfoboxdesc', 'capdmdwb'), 0));
-
 
     $settings->add(new admin_setting_configtextarea('capdmdwb/customcss',
         get_string('customcss', 'capdmdwb'), get_string('customcssdesc', 'capdmdwb'), '', PARAM_TEXT, 80));
