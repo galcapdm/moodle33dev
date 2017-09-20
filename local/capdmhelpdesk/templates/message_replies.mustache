@@ -26,7 +26,7 @@
     {{/replies}}
     {{#replies}}
     <div class="replier-{{originator}}">
-        <p class="message-reply">{{ message }}</p>
+        <p class="message-reply">{{{ message }}}</p>
         <span class="reply-date-header"></span>
         <p><span class="reply-date">{{# str }} replyby, local_capdmhelpdesk, { "replier": {{# quote }}{{fullname}}{{/ quote }}, "replytime": {{# quote }}{{submitdate}}{{/ quote }} }{{/str}}</span></p>
     </div>

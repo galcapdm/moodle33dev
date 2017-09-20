@@ -111,7 +111,7 @@ class external extends external_api {
         foreach ($replies as $r) {
             $result['replies'][] = array(
                 'replyto' => $r->replyto,
-                'message' => $r->message,
+                'message' => nl2br($r->message),
                 'submitdate' => $r->submitdate,
                 'username' => $r->username,
                 'originator' => $r->originator,
@@ -140,7 +140,7 @@ class external extends external_api {
                     new external_single_structure(
                         array(
                             'replyto' => new external_value(PARAM_INT, 'ID of the original message.'),
-                            'message' => new external_value(PARAM_TEXT, 'Detail of the reply.'),
+                            'message' => new external_value(PARAM_RAW, 'Detail of the reply.'),
                             'submitdate' => new external_value(PARAM_TEXT, 'Date the reply was submitted converted by the MySQL to a date for consistency.'),
                             'username' => new external_value(PARAM_TEXT, 'Username of the replier.'),
                             'originator' => new external_value(PARAM_TEXT, 'Who is the orignator of this message.'),

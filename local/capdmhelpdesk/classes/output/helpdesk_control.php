@@ -113,7 +113,7 @@ from {capdmhelpdesk_requests} where userid = 3 and (status = 0 or status = -1) g
                     $message['id'] = $r->id;
                     $message['category'] = $r->category;
                     $message['subject'] = $r->subject;
-                    $message['message'] = $r->message;
+                    $message['message'] = nl2br($r->message);
                     $message['status'] = $r->status;
                     $message['readflag'] = $r->readflag;
                     $message['submitdate'] = $dateSub;
@@ -122,7 +122,7 @@ from {capdmhelpdesk_requests} where userid = 3 and (status = 0 or status = -1) g
                     $message['id'] = $r->id;
                     $message['category'] = $r->category;
                     $message['subject'] = $r->subject;
-                    $message['message'] = $r->message;
+                    $message['message'] = nl2br($r->message);
                     $message['status'] = $r->status;
                     $message['readflag'] = $r->readflag;
                     $message['submitdate'] = $dateSub;
